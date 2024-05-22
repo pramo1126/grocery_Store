@@ -55,7 +55,7 @@ const TemporaryDrawer = () => {
               <ListItemButton
                 key={category.Category_ID}
                 component={Link}
-                to={`/category/${category.Category_ID}`}
+                to={`/admin/category/${category.Category_ID}`}
                 sx={{ pl: 4 }}
               >
                 <ListItemText primary={category.Product_Category} />

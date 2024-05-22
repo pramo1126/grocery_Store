@@ -1,34 +1,58 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { pool } = require('../config/db.js');
-const path = require('path');
+const { pool } = require("../config/db.js");
 
 // Add a new category
-router.post('/categoryRoutes/category', async (req, res) => {
-    const { name } = req.body;
-
-    try {
-        const result = await pool.query('INSERT INTO productcategory (Category_Name) VALUES ($1) RETURNING *', [name]);
-        res.json(result.rows[0]);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error adding category');
-    }
+router.post("/category", async (req, res) => {
+	const { Product_Category, Category_Desc } = req.body;
+	try {
+		const result = await pool.query(
+			"INSERT INTO productcategory (Product_Category, Category_Desc) VALUES (?, ?)",
+			[Product_Category, Category_Desc]
+		);
+		res.json({ success: true, category: { id: result.insertId, Product_Category, Category_Desc } });
+	} catch (err) {
+		console.error(err);
+		res.status(500).send("Error adding category");
+	}
 });
 
 // Update a category
-router.put('/categoryRoutes/category/:id', async (req, res) => {
-    const { id } = req.params;
-    const { name } = req.body;
+router.put("/category/:id", async (req, res) => {
+	const { id } = req.params;
+	const { name } = req.body;
+	try {
+		const result = await pool.query(
+			"UPDATE productcategory SET Category_Name = ? WHERE Category_ID = ?",
+			[name, id]
+		);
+		res.json(result[0]);
+	} catch (err) {
+		console.error(err);
+		res.status(500).send("Error updating category");
+	}
+});
 
+router.get("/categories", async (req, res) => {
+	try {
+		const [rows] = await pool.query("SELECT * FROM productcategory");
+		res.json(rows); // Return only the rows, not the metadata
+	} catch (err) {
+		console.error(err);
+		res.status(500).send("Error fetching categories");
+	}
+});
+
+router.get("/category/:categoryId", async (req, res) => {
     try {
-        const result = await pool.query('UPDATE productcategory SET Category_Name = $1 WHERE Category_ID = $2 RETURNING *', [name, id]);
-        res.json(result.rows[0]);
+        const categoryId = req.params.categoryId;
+        // Assuming you have a table named 'productcategory' which holds your category data
+        const [rows] = await pool.query('SELECT * FROM productcategory WHERE Category_ID = ?', [categoryId]);
+        res.json(rows);
     } catch (err) {
         console.error(err);
-        res.status(500).send('Error updating category');
+        res.status(500).send("Error fetching category data");
     }
-})
+});
 
-
-    module.exports = router;
+module.exports = router;

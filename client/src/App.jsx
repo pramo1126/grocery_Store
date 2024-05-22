@@ -50,6 +50,7 @@ function App() {
             <Route path="/CategoryForm" element={<CategoryForm />} />
             <Route path="/AdminProductList" element={<AdminProductList />} />
             <Route path="/category/:categoryId" element={<CategoryPage />} />
+            <Route path="/admin/category/:categoryId" component={AdminProductList} />
           </Routes>
         </BrowserRouter>
       </CartProvider>

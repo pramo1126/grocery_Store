@@ -1,38 +1,19 @@
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import AdminNavbar from '../components/AdminNavbar';
 import AdminFooter from '../components/AdminFooter';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-
 const AdminProductList = () => {
-    const [categoryId, setCategoryId] = useState(''); // Add state for category selection
+    const { categoryId } = useParams(); // Get category ID from URL
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
 
-
-const getProductsByCategory = async (categoryId) => {
-    try {
-        const response = await axios.get(`https://localhost:8000/AdminProductList/${categoryId}`);
-        if (response.status === 200) {
-            return response.data;
-        } else {
-            throw new Error('Failed to fetch products. Please try again.');
-        }
-    } catch (error) {
-        console.error('Error fetching products:', error.message);
-        return [];
-    }
-};
-
-
-
     useEffect(() => {
-        // Fetch categories data
-        // Example: Fetch categories from an API endpoint
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('https://localhost:8000/categories');
+                const response = await axios.get('http://localhost:8000/categories');
                 setCategories(response.data);
             } catch (error) {
                 console.error('Error fetching categories:', error);
@@ -42,32 +23,35 @@ const getProductsByCategory = async (categoryId) => {
         fetchCategories();
     }, []);
 
-    const handleCategoryChange = (selectedCategoryId) => {
-        setCategoryId(selectedCategoryId);
-        // Fetch products based on selected category
-        getProductsByCategory(selectedCategoryId).then(products => setProducts(products));
-    };
+    useEffect(() => {
+        if (categoryId) {
+            const fetchProducts = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:8000/AdminProductList/${categoryId}`);
+                    setProducts(response.data);
+                } catch (error) {
+                    console.error('Error fetching products:', error);
+                }
+            };
 
+            fetchProducts();
+        }
+    }, [categoryId]);
 
-    // Define the logic for editing a product
     const handleEdit = (productId) => {
         console.log('Edit:', productId);
     };
 
-    // Define the logic for deleting a product
     const handleDelete = (productId) => {
         console.log('Delete:', productId);
     };
 
-    <AdminProductList categories={categories} />
-
-
     return (
         <div>
-            <AdminNavbar categories={categories} handleCategoryChange={handleCategoryChange} />
+            <AdminNavbar categories={categories} />
             <div className='px-5 mt-3'>
                 <div className='d-flex justify-content-center'>
-                    <h3>Product List - {categoryId ? categories.find(category => category.id === categoryId)?.name : 'All Products'}</h3>
+                    <h3>Product List - {categoryId ? categories.find(category => category.Category_ID === parseInt(categoryId))?.Product_Category : 'All Products'}</h3>
                 </div>
                 <Link to={"/AddProducts"} className='btn btn-success'> Add Products </Link>
             </div>
@@ -87,7 +71,7 @@ const getProductsByCategory = async (categoryId) => {
                         {products.map((product) => (
                             <tr key={product.Product_ID}>
                                 <td>{product.Product_Name}</td>
-                                <td><img src={product.ProductImage} style={{ width: '100px' }} /></td>
+                                <td><img src={product.ProductImage} alt={product.Product_Name} style={{ width: '100px' }} /></td>
                                 <td>{product.Product_ID}</td>
                                 <td>{product.Price}</td>
                                 <td>{product.Expiry_Date}</td>
@@ -105,4 +89,4 @@ const getProductsByCategory = async (categoryId) => {
     );
 };
 
-export default AdminProductList
+export default AdminProductList;

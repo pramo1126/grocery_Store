@@ -32,7 +32,7 @@ const AddProductForm = () => {
 		formData.append("ProductCategory", values.ProductCategory);
 
 		axios
-			.post("http://localhost:8000/productRoutes/AddProducts", formData)
+			.post("http://localhost:8000/productRoutes/product", formData)
 
 			.then((result) => {
 				if (result.data.success) {

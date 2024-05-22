@@ -5,7 +5,7 @@ require("dotenv").config();
 const pool = mysql.createPool({
     host: "srv1327.hstgr.io",
     user: "u323893650_pramo",
-    password: "pramoData##12",
+    password: "Pramo####1234ll",
     database: "u323893650_grocery_store"
     // u323893650_grocery_store	
 
