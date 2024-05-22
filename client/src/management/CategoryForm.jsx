@@ -1,17 +1,17 @@
 import { useState } from 'react';
-// import { addCategory, updateCategory } from '../services/categories';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 
-
-const CategoryForm = ({ category, onSave }) => {
-    const [name, setName] = useState(category ? category.Category_Name : '');
-
+const CategoryForm = ({ category }) => {
+    const [name, setName] = useState(category ? category.Product_Category : '');
     const [description, setDescription] = useState(category ? category.Category_Desc : '');
+    const [message, setMessage] = useState('');
 
-    const handleSave = async () => {
+    const handleSave = async (e) => {
+        e.preventDefault();
+
         const formData = {
-            Category_Name: name,
+            Product_Category: name,
             Category_Desc: description
         };
 
@@ -21,14 +21,13 @@ const CategoryForm = ({ category, onSave }) => {
             } else {
                 await axios.post('http://localhost:8000/categoryRoutes/category', formData);
             }
-            onSave();
-            console.log("Success");
-            // Redirect or handle success message
+            setMessage('Category saved successfully!');
         } catch (error) {
             console.error(error);
-            // Handle error
+            setMessage('Error saving category.');
         }
     };
+
     return (
         <div style={{ backgroundImage: "linear-gradient(to bottom, #F2B75E, #B2BEB5)", color: "#fff", display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
             <div className="col-12 col-md-6 col-lg-7 col-xl-8">
@@ -44,7 +43,7 @@ const CategoryForm = ({ category, onSave }) => {
                                             </h2>
                                         </div>
                                         <div className="form-outline mb-4">
-                                        <br></br>
+                                            <br></br>
                                             <label className="form-label" htmlFor="categoryName">Category Name</label>
                                             <input type="text" id="categoryName" className="form-control form-control-lg" value={name} onChange={e => setName(e.target.value)} style={{ fontSize: '13px' }} />
                                         </div>
@@ -56,6 +55,7 @@ const CategoryForm = ({ category, onSave }) => {
                                             <button type="submit" className="btn btn-dark btn-block btn-lg text-white" style={{ fontSize: '13px', padding: '10px' }}>Save</button>
                                         </div>
                                     </form>
+                                    {message && <div className="mt-3 text-success">{message}</div>}
                                 </div>
                             </div>
                         </div>
@@ -68,7 +68,6 @@ const CategoryForm = ({ category, onSave }) => {
 
 CategoryForm.propTypes = {
     category: PropTypes.object,
-    onSave: PropTypes.func.isRequired,
 };
 
-export default CategoryForm
+export default CategoryForm;

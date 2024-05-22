@@ -1,17 +1,16 @@
-import AdminNavbar from '../components/AdminNavbar';
+import { Link } from 'react-router-dom';
 import AdminFooter from '../components/AdminFooter';
+import Navbar from '../components/AdminsideNavbar';
 
-const admin = () => {
+const Admin = () => {
   return (
     <div>
-      <AdminNavbar />
-   <div className="d-flex justify-content-left">
-                                            <button type="submit" className="btn btn-dark btn-block btn-lg text-white" style={{ fontSize: '13px', padding: '10px' }}>Add Category</button>
-                                        </div>
-      <br></br><br></br><br></br><br></br><br></br><br></br>
-      <AdminFooter />
+      <Navbar />
+      <p>hi</p>
+      <button><Link to='/categoryForm'> Category</Link></button>
+      <AdminFooter className="mb-auto"/>
     </div>
   )
 }
-
-export default admin
+  
+export default Admin;
