@@ -1,118 +1,69 @@
 import { useState } from "react";
 import { Card, Button } from "react-bootstrap";
 import PropTypes from "prop-types";
-import { useCart } from '../Context/CartContext';
+const CustomCard = ({ productName, imageSrc, productPrice }) => {
+	const [quantity, setQuantity] = useState(0);
+	const [addToCart, setAddToCart] = useState(false);
 
-const CustomCard = ({ productName, imageSrc, productPrice, product }) => {
-    const { addOrUpdateCart } = useCart();
-    const [quantity, setQuantity] = useState(0);
-    const [addToCartView, setAddToCartView] = useState(false);
+	const handleAddToCart = () => {
+		// Implement the logic to add the product to the cart
+		console.log(`Added ${quantity} ${productName} to cart.`);
+		// Reset quantity after adding to cart
+		setQuantity(0);
+		// Update addToCart state to true
+		setAddToCart(true);
+	};
 
-    const handleAddToCart = async () => {
-        if (quantity > 0) {
-            await addOrUpdateCart(product, quantity);
-            setAddToCartView(false);
-        }
-    };
+	const handleAdd = () => {
+		setQuantity(quantity + 1);
+	};
 
-    const handleAdd = async () => {
-        const newQuantity = quantity + 1;
-        setQuantity(newQuantity);
-        setAddToCartView(true);
-        await addOrUpdateCart(product, newQuantity);
-    };
+	const handleReduce = () => {
+		if (quantity > 0) {
+			setQuantity(quantity - 1);
+		}
+	};
 
-    const handleReduce = async () => {
-        if (quantity > 1) {
-            const newQuantity = quantity - 1;
-            setQuantity(newQuantity);
-            await addOrUpdateCart(product, newQuantity);
-        } else {
-            setAddToCartView(false);
-            setQuantity(0);
-            await addOrUpdateCart(product, 0);
-        }
-    };
+	return (
+		<div className='col-lg-3 col-md-4 col-sm-6 mb-4  mt-5'>
+			<Card.Title style={{ fontSize: "14px", textAlign: "center" }}>
+				{/* <div style={{ fontWeight: "bold", marginBottom: "5px" }}>Category: {"categoryName"}</div> */}
+				{/* {productName} */}
+			</Card.Title>
 
-    return (
-        <div className='col-lg-3 col-md-4 col-sm-6 mb-4 mt-5'>
-            <Card>
-                <Card.Img variant='top' src={imageSrc} />
-                <Card.Body>
-                    <Card.Title style={{ fontSize: "14px", textAlign: "center" }}>{productName}</Card.Title>
-                    <Card.Text style={{ fontSize: "13px", textAlign: "center" }}>{productPrice} Rs</Card.Text>
-                    {addToCartView ? (
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <Button variant='success' size='sm' onClick={handleReduce}>-</Button>
-                            <span>{quantity}</span>
-                            <Button variant='success' size='sm' onClick={handleAdd}>+</Button>
-                        </div>
-                    ) : (
-                        <Button variant='success' size='sm' onClick={handleAdd}>Add to Cart</Button>
-                    )}
-                </Card.Body>
-            </Card>
-        </div>
-    );
+			<Card>
+				<Card.Img variant='top' src={imageSrc} />
+				<Card.Body>
+					<Card.Title style={{ fontSize: "14px", textAlign: "center" }}>{productName}</Card.Title>
+					<Card.Text style={{ fontSize: "13px", textAlign: "center" }}>{productPrice}</Card.Text>
+
+					{!addToCart ? (
+						<div style={{ fontSize: "10px", textAlign: "center" }}>
+							<Button variant='success' size='sm' onClick={handleAddToCart}>
+								Add to Cart
+							</Button>
+						</div>
+					) : (
+						<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+							<Button variant='success' size='sm' onClick={handleReduce}>
+								-
+							</Button>
+							<span>{quantity}</span>
+							<Button variant='success' size='sm' onClick={handleAdd}>
+								+
+							</Button>
+						</div>
+					)}
+				</Card.Body>
+			</Card>
+		</div>
+	);
 };
 
 CustomCard.propTypes = {
-    productName: PropTypes.string.isRequired,
-    imageSrc: PropTypes.string.isRequired,
-    productPrice: PropTypes.string.isRequired,
-    product: PropTypes.object.isRequired
-};
-
-export default CustomCard;import { useState } from "react";
-import { Card, Button } from "react-bootstrap";
-import PropTypes from "prop-types";
-import { useCart } from '../Context/CartContext';
-
-const CustomCard = ({ productName, imageSrc, productPrice, product }) => {
-    const { addToCart, updateQuantity } = useCart();
-    const [quantity, setQuantity] = useState(0);
-
-    const handleAdd = async () => {
-        const newQuantity = quantity + 1;
-        setQuantity(newQuantity);
-        if (quantity === 0) {
-            await addToCart(product, newQuantity);
-        } else {
-            await updateQuantity(product.Product_ID, newQuantity);
-        }
-    };
-
-    const handleReduce = async () => {
-        if (quantity > 0) {
-            const newQuantity = quantity - 1;
-            setQuantity(newQuantity);
-            await updateQuantity(product.Product_ID, newQuantity);
-        }
-    };
-
-    return (
-        <div className='col-lg-3 col-md-4 col-sm-6 mb-4 mt-5'>
-            <Card>
-                <Card.Img variant='top' src={imageSrc} />
-                <Card.Body>
-                    <Card.Title style={{ fontSize: "14px", textAlign: "center" }}>{productName}</Card.Title>
-                    <Card.Text style={{ fontSize: "13px", textAlign: "center" }}>{productPrice} Rs</Card.Text>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <Button variant='success' size='sm' onClick={handleReduce}>-</Button>
-                        <span>{quantity}</span>
-                        <Button variant='success' size='sm' onClick={handleAdd}>+</Button>
-                    </div>
-                </Card.Body>
-            </Card>
-        </div>
-    );
-};
-
-CustomCard.propTypes = {
-    productName: PropTypes.string.isRequired,
-    imageSrc: PropTypes.string.isRequired,
-    productPrice: PropTypes.string.isRequired,
-    product: PropTypes.object.isRequired
+	productName: PropTypes.string.isRequired,
+	imageSrc: PropTypes.string.isRequired,
+	productPrice: PropTypes.string.isRequired,
 };
 
 export default CustomCard;
