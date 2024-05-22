@@ -1,101 +1,118 @@
-import  { useState } from 'react';
-import { useEffect } from 'react';
-import { Card, Button } from 'react-bootstrap';
-import PropTypes from 'prop-types';
+import { useState } from "react";
+import { Card, Button } from "react-bootstrap";
+import PropTypes from "prop-types";
+import { useCart } from '../Context/CartContext';
 
-const CustomCard = ({ productName, imageSrc, productPrice,}) => {
+const CustomCard = ({ productName, imageSrc, productPrice, product }) => {
+    const { addOrUpdateCart } = useCart();
     const [quantity, setQuantity] = useState(0);
-    const [addToCart, setAddToCart] = useState(false);
-    const [isHovered, setIsHovered] = useState(false);
-    const [cartItems, setCartItems] = useState([]);
+    const [addToCartView, setAddToCartView] = useState(false);
 
-    // const getUserfromLocalStorage = localStorage.getItem("user")
-    //     ? JSON.parse(localStorage.getItem("user"))
-    //     : null;
-    //     console.log(getUserfromLocalStorage.ID);
-
-    const getUserfromLocalStorage = localStorage.getItem("user")
-        ? JSON.parse(localStorage.getItem("user"))
-        : null;
-
-    if (getUserfromLocalStorage) {
-        console.log(getUserfromLocalStorage.ID);
-    } else {
-        console.log("No user found in localStorage");
-    }
-
-
-    useEffect(() => {
-        console.log(`Product: ${productName}, Quantity: ${quantity}, Price: ${ productPrice }, Image: ${imageSrc}`);
-    }, [quantity, productName , productPrice, imageSrc]); // Include productName in the dependency array to ensure updates are logged correctly
-    const handleAddToCart = () => {
-        const productDetails = {
-            productName,
-            productPrice,
-            quantity
-        };
-      setCartItems(prevItems => [...prevItems, productDetails]);
-        setAddToCart(true);
-    };
-
-    const handleAdd = () => {
-        setQuantity(quantity + 1);
-    };
-
-    const handleReduce = () => {
+    const handleAddToCart = async () => {
         if (quantity > 0) {
-            setQuantity(quantity - 1);
+            await addOrUpdateCart(product, quantity);
+            setAddToCartView(false);
         }
     };
 
-    CustomCard.propTypes = {
-        productName: PropTypes.string.isRequired,
-        imageSrc: PropTypes.string.isRequired,
-        productPrice: PropTypes.string.isRequired,
-        handleAddToCart: PropTypes.func.isRequired,
+    const handleAdd = async () => {
+        const newQuantity = quantity + 1;
+        setQuantity(newQuantity);
+        setAddToCartView(true);
+        await addOrUpdateCart(product, newQuantity);
     };
-    return (
-        <div className="col-lg-3 col-md-4 col-sm-6 mb-4">
-            <Card
-                style={{
-                    width: '18rem',
-                    cursor: 'pointer',
-                    boxShadow: isHovered ? '0 4px 8px rgba(0,0,0,0.2)' : 'none',
-                    transition: 'box-shadow 0.3s'
-                }}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-            >
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
-                    <Card.Img
-                        variant="top"
-                        src={imageSrc}
-                        style={{
-                            width: '150px',
-                            height: '150px',
-                            objectFit: 'contain',
-                        }}
-                    />
-                </div>
-                <Card.Body>
-                    <Card.Title style={{ fontSize: '14px', textAlign: 'center' }}>{productName}</Card.Title>
-                    <Card.Text style={{ fontSize: '13px', textAlign: 'center' }}>{productPrice}</Card.Text>
 
-                    {!addToCart ? (
-                        <div style={{ fontSize: '10px', textAlign: 'center' }}>
-                            <Button variant="success" size="sm" onClick={handleAddToCart}>Add to Cart</Button>
+    const handleReduce = async () => {
+        if (quantity > 1) {
+            const newQuantity = quantity - 1;
+            setQuantity(newQuantity);
+            await addOrUpdateCart(product, newQuantity);
+        } else {
+            setAddToCartView(false);
+            setQuantity(0);
+            await addOrUpdateCart(product, 0);
+        }
+    };
+
+    return (
+        <div className='col-lg-3 col-md-4 col-sm-6 mb-4 mt-5'>
+            <Card>
+                <Card.Img variant='top' src={imageSrc} />
+                <Card.Body>
+                    <Card.Title style={{ fontSize: "14px", textAlign: "center" }}>{productName}</Card.Title>
+                    <Card.Text style={{ fontSize: "13px", textAlign: "center" }}>{productPrice} Rs</Card.Text>
+                    {addToCartView ? (
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <Button variant='success' size='sm' onClick={handleReduce}>-</Button>
+                            <span>{quantity}</span>
+                            <Button variant='success' size='sm' onClick={handleAdd}>+</Button>
                         </div>
                     ) : (
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Button variant="success" size="sm" onClick={handleReduce}>-</Button>
-                            <span>{quantity}</span>
-                            <Button variant="success" size="sm" onClick={handleAdd}>+</Button>
-                        </div>
+                        <Button variant='success' size='sm' onClick={handleAdd}>Add to Cart</Button>
                     )}
                 </Card.Body>
             </Card>
         </div>
     );
+};
+
+CustomCard.propTypes = {
+    productName: PropTypes.string.isRequired,
+    imageSrc: PropTypes.string.isRequired,
+    productPrice: PropTypes.string.isRequired,
+    product: PropTypes.object.isRequired
+};
+
+export default CustomCard;import { useState } from "react";
+import { Card, Button } from "react-bootstrap";
+import PropTypes from "prop-types";
+import { useCart } from '../Context/CartContext';
+
+const CustomCard = ({ productName, imageSrc, productPrice, product }) => {
+    const { addToCart, updateQuantity } = useCart();
+    const [quantity, setQuantity] = useState(0);
+
+    const handleAdd = async () => {
+        const newQuantity = quantity + 1;
+        setQuantity(newQuantity);
+        if (quantity === 0) {
+            await addToCart(product, newQuantity);
+        } else {
+            await updateQuantity(product.Product_ID, newQuantity);
+        }
+    };
+
+    const handleReduce = async () => {
+        if (quantity > 0) {
+            const newQuantity = quantity - 1;
+            setQuantity(newQuantity);
+            await updateQuantity(product.Product_ID, newQuantity);
+        }
+    };
+
+    return (
+        <div className='col-lg-3 col-md-4 col-sm-6 mb-4 mt-5'>
+            <Card>
+                <Card.Img variant='top' src={imageSrc} />
+                <Card.Body>
+                    <Card.Title style={{ fontSize: "14px", textAlign: "center" }}>{productName}</Card.Title>
+                    <Card.Text style={{ fontSize: "13px", textAlign: "center" }}>{productPrice} Rs</Card.Text>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <Button variant='success' size='sm' onClick={handleReduce}>-</Button>
+                        <span>{quantity}</span>
+                        <Button variant='success' size='sm' onClick={handleAdd}>+</Button>
+                    </div>
+                </Card.Body>
+            </Card>
+        </div>
+    );
+};
+
+CustomCard.propTypes = {
+    productName: PropTypes.string.isRequired,
+    imageSrc: PropTypes.string.isRequired,
+    productPrice: PropTypes.string.isRequired,
+    product: PropTypes.object.isRequired
 };
 
 export default CustomCard;
