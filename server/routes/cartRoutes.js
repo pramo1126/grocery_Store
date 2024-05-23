@@ -2,73 +2,83 @@ const express = require('express');
 const router = express.Router();
 const { pool } = require('../config/db.js');
 
-// Endpoint to add or update items in the cart
+// Add or update cart item
 router.post('/addOrUpdateCart', async (req, res) => {
-    const { userId, productId, quantity } = req.body;
-    const query = `
-        INSERT INTO cart (ID, Product_ID, Qty) 
-        VALUES (?, ?, ?) 
-        ON DUPLICATE KEY UPDATE Qty = ?
-    `;
     try {
-        pool.query(query, [userId, productId, quantity, quantity], (err, result) => {
-            if (err) {
-                console.error('Failed to update cart:', err);
-                return res.status(500).send('Error updating cart');
-            }
-            res.status(200).send('Cart updated successfully');
-        });
+        const { userId, productId, quantity } = req.body;
+
+        const query = `
+            INSERT INTO cart (ID, Product_ID, Qty) 
+            VALUES (?, ?, ?) 
+            ON DUPLICATE KEY UPDATE Qty = VALUES(Qty)
+        `;
+
+        await pool.query(query, [userId, productId, quantity]);
+        
+        res.status(200).send('Cart updated successfully');
     } catch (error) {
         console.error('Failed to update cart:', error);
         res.status(500).send('Error updating cart');
     }
 });
 
-// Endpoint to get cart items for a user
-router.get('/getCartItems', async (req, res) => {
-    const { userId } = req.query;
-
-    const query = `
-        SELECT c.Cart_Id, c.ID, c.Product_ID, c.Qty, p.Product_Name, p.Price
-        FROM cart c
-        JOIN product p ON c.Product_ID = p.Product_ID
-        WHERE c.ID = ?
-    `;
-
+// Get all cart items for a user
+router.get('/cart/:userId', async (req, res) => {
     try {
-        pool.query(query, [userId], (err, results) => {
-            if (err) {
-                console.error('Failed to fetch cart items:', err);
-                return res.status(500).send('Error fetching cart items');
-            }
-            res.status(200).json(results);
-        });
+        const userId = req.params.userId;
+
+        const query = `
+            SELECT cart.*, product.*
+            FROM cart
+            JOIN product ON cart.Product_ID = product.Product_ID
+            WHERE cart.ID = ?
+        `;
+
+        const [rows] = await pool.query(query, [userId]);
+        res.json(rows);
     } catch (error) {
-        console.error('Error on server:', error);
-        res.status(500).send('Server error');
+        console.error('Failed to get cart items:', error);
+        res.status(500).send('Error getting cart items');
     }
 });
 
-// Endpoint to remove a cart item
-router.delete('/removeCartItem', async (req, res) => {
-    const { cartId } = req.query;
-
-    const query = `
-        DELETE FROM cart
-        WHERE Cart_Id = ?
-    `;
-
+// Update cart item quantity
+router.put('/cart/:userId/:productId', async (req, res) => {
     try {
-        pool.query(query, [cartId], (err, result) => {
-            if (err) {
-                console.error('Failed to remove cart item:', err);
-                return res.status(500).send('Error removing cart item');
-            }
-            res.status(200).send('Cart item removed successfully');
-        });
+        const { userId, productId } = req.params;
+        const { quantity } = req.body;
+
+        const query = `
+            UPDATE cart 
+            SET Qty = ? 
+            WHERE ID = ? AND Product_ID = ?
+        `;
+
+        await pool.query(query, [quantity, userId, productId]);
+        
+        res.status(200).send('Cart item updated successfully');
     } catch (error) {
-        console.error('Error on server:', error);
-        res.status(500).send('Server error');
+        console.error('Failed to update cart item:', error);
+        res.status(500).send('Error updating cart item');
+    }
+});
+
+// Delete cart item
+router.delete('/cart/:userId/:productId', async (req, res) => {
+    try {
+        const { userId, productId } = req.params;
+
+        const query = `
+            DELETE FROM cart 
+            WHERE ID = ? AND Product_ID = ?
+        `;
+
+        await pool.query(query, [userId, productId]);
+        
+        res.status(200).send('Cart item deleted successfully');
+    } catch (error) {
+        console.error('Failed to delete cart item:', error);
+        res.status(500).send('Error deleting cart item');
     }
 });
 

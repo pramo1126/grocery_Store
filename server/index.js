@@ -51,6 +51,9 @@ app.post('/Signup', async (req, res) => {
 });
 
 // Login Route
+// Login Route
+
+// Login Route
 app.post('/Login', async (req, res) => {
     const { email, password } = req.body;
 
@@ -74,12 +77,18 @@ app.post('/Login', async (req, res) => {
             return res.status(401).json({ success: false, message: 'Invalid password' });
         }
 
+        const userId = user.ID; // Retrieve the user ID
+
+        console.log(`User ID ${userId} logged in.`); // Log the user ID to console
+
         let destination = (user.Email.toLowerCase() === 'admin_sameera@gmail.com'.toLowerCase()) ? '/AdminDashboard' : '/Home';
-        return res.status(200).json({ success: true, message: 'Login successful', user, destination });
+        return res.status(200).json({ success: true, message: 'Login successful', user, destination, userId });
     } catch (err) {
+        console.error(err); // Log any caught errors
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });
+
 
 checkConnection()
     .then(() => {

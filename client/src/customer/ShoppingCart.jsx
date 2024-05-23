@@ -1,125 +1,84 @@
-import Navbar from '../components/Navbar/Navbar';
 import { useCart } from '../Context/CartContext';
+import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer';
+import { Table, Button, Image, Container, Row, Col } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const ShoppingCart = () => {
   const { cart, removeFromCart, updateQuantity } = useCart();
 
-  console.log("Cart items in ShoppingCart:", cart);
+  const handleDecreaseQuantity = (productId, currentQuantity) => {
+    if (currentQuantity > 1) {
+      updateQuantity(productId, currentQuantity - 1);
+    }
+  };
+
+  const handleIncreaseQuantity = (productId) => {
+    const product = cart.find(product => product.Product_ID === productId);
+    if (product) {
+      updateQuantity(productId, product.Qty + 1);
+    }
+  };
+
+  const calculateTotalPrice = () => {
+    return cart.reduce((total, product) => total + (product.Price * product.Qty), 0).toFixed(2);
+  };
 
   return (
     <div>
       <Navbar />
-
-      <div className="card-header"><h3>Shopping Cart</h3></div>
-      <div className="card-body">
-        <table className='table'>
-          <thead>
-            <tr>
-              <th>Product Name</th>
-              <th>Quantity</th>
-              <th>Unit Price (Rs)</th>
-              <th>Total Price</th>
-              <th>Remove</th>
-            </tr>
-          </thead>
-          <tbody>
-            {cart.length > 0 ? cart.map((item, index) => (
-              <tr key={index}>
-                <td>{item.Product_Name}</td>
-                <td>
-                  <button onClick={() => updateQuantity(item.Product_ID, item.quantity - 1)}>-</button>
-                  {item.quantity}
-                  <button onClick={() => updateQuantity(item.Product_ID, item.quantity + 1)}>+</button>
-                  {item.quantity}
-                </td>
-                <td>{item.Price}</td>
-                <td>{item.Price * item.quantity}</td>
-                <td>
-                  <button onClick={() => removeFromCart(item.Product_ID)}>Remove</button>
-                </td>
-              </tr>
-            )) : <tr><td colSpan="5">No items in the cart</td></tr>}
-          </tbody>
-        </table>
-      </div>
+      <Container>
+        <Row className="my-4">
+          <Col>
+            <h3>Shopping Cart</h3>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>Product Image</th>
+                  <th>Product Name</th>
+                  <th>Quantity</th>
+                  <th>Unit Price (Rs)</th>
+                  <th>Total Price</th>
+                  <th>Remove</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cart.length > 0 ? cart.map((product, index) => (
+                  <tr key={index}>
+                    <td>
+                      <Image src={`http://localhost:8000/Uploads/Biscuits&snacks/${product.ProductImage}`} rounded width="50" height="50" />
+                    </td>
+                    <td>{product.Product_Name}</td>
+                    <td>
+                      <Button variant="secondary" size="sm" onClick={() => handleDecreaseQuantity(product.Product_ID, product.Qty)}>-</Button>
+                      <span className="mx-2">{product.Qty}</span>
+                      <Button variant="secondary" size="sm" onClick={() => handleIncreaseQuantity(product.Product_ID)}>+</Button>
+                    </td>
+                    <td>{product.Price}</td>
+                    <td>{(product.Price * product.Qty).toFixed(2)}</td>
+                    <td>
+                      <Button variant="danger" size="sm" onClick={() => removeFromCart(product.Product_ID)}>Remove</Button>
+                    </td>
+                  </tr>
+                )) : <tr><td colSpan="6" className="text-center">No items in the cart</td></tr>}
+              </tbody>
+            </Table>
+          </Col>
+        </Row>
+        <Row>
+          <Col className="text-right">
+            <h4>Total Price: Rs {calculateTotalPrice()}</h4>
+            <Button variant="primary" size="lg">Proceed to Checkout</Button>
+          </Col>
+        </Row>
+      </Container>
       <Footer />
     </div>
   );
 };
 
 export default ShoppingCart;
-
-
-
-// import Navbar from '../components/Navbar/Navbar'
-// import { useCart } from '../Context/CartContext';
-// import Footer from '../components/Footer';
-
-// const ShoppingCart = () => {
-//   const { cart, removeFromCart, updateQuantity } = useCart();
-
-  
-
-//   console.log("Cart items in ShoppingCart:", cart);
-
-//   return (
-//     <div>
-//       <Navbar />
-
-//       <div className ="card-header"><h3> Shopping Cart</h3></div>
-//       <div className="card-body">
-//       <table className='table'>
-//       <tr>
-
-
-//             <th>Product Name</th>
-//             <th>Quantity</th>
-//             <th>Unit Price (Rs)</th>
-//             <th>Total Price</th>
-//             <th>Remove</th>
-
-//       </tr>
-//         </thead>
-//         <tbody>
-//           {cart.length > 0 ? cart.map((item, index) => (
-//             <tr key={index}>
-//               <td>{item.ProductName}</td>
-//               <td>
-//                 <button onClick={() => updateQuantity(item.Product_ID, item.quantity - 1)}>-</button>
-//                 {item.quantity}
-//                 <button onClick={() => updateQuantity(item.Product_ID, item.quantity + 1)}>+</button>
-//               </td>
-//               <td>{item.Price}</td>
-//               <td>{item.Price * item.quantity}</td>
-//               <td>
-//                 <button onClick={() => removeFromCart(item.Product_ID)}>Remove</button>
-//               </td>
-//             </tr>
-//           )) : <tr><td colSpan="5">No items in the cart</td></tr>}
-//         </tbody>
-  
-//       </table>
-//     </div>
-//   <Footer />
-//     </div >
- 
-//   );
-// };
-
-// export default ShoppingCart;
-
-
-//       {/* <div className="container">
-//         {cart.length > 0 ? cart.map((cartItems, index) => (
-//           <div key={index}>
-//             <img src={`http://localhost:8000/Uploads/Biscuits&snacks/${cartItems.ProductImage}`} alt={cartItems.ProductName} />
-//             <p>{cartItems.ProductName}</p>
-//             <p>Quantity: {cartItems.quantity}</p>
-//             <button onClick={() => updateQuantity(cartItems.productId, cartItems.quantity + 1)}>+</button>
-//             <button onClick={() => updateQuantity(cartItems.productId, cartItems.quantity - 1)}>-</button>
-//             <button onClick={() => removeFromCart(cartItems.productId)}>Remove</button>
-//           </div>
-//             )) : <p>No items in the cart</p>}
-//           </div> */}
-    

@@ -1,69 +1,73 @@
-import { useState } from "react";
 import { Card, Button } from "react-bootstrap";
 import PropTypes from "prop-types";
-const CustomCard = ({ productName, imageSrc, productPrice }) => {
-	const [quantity, setQuantity] = useState(0);
-	const [addToCart, setAddToCart] = useState(false);
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
-	const handleAddToCart = () => {
-		// Implement the logic to add the product to the cart
-		console.log(`Added ${quantity} ${productName} to cart.`);
-		// Reset quantity after adding to cart
-		setQuantity(0);
-		// Update addToCart state to true
-		setAddToCart(true);
-	};
+const CustomCard = ({ productId, productName, imageSrc, productPrice, handleAddToCart }) => {
+    const [addedToCart, setAddedToCart] = useState(false);
+    const [userId, setUserId] = useState(null);
 
-	const handleAdd = () => {
-		setQuantity(quantity + 1);
-	};
+    useEffect(() => {
+        const fetchUserId = () => {
+            const storedUser = localStorage.getItem('user');
+            const user = storedUser ? JSON.parse(storedUser) : null;
+            if (user && user.ID) {
+                setUserId(user.ID);
+                console.log(user.ID);
+            }
+        };
 
-	const handleReduce = () => {
-		if (quantity > 0) {
-			setQuantity(quantity - 1);
-		}
-	};
+        fetchUserId();
+    }, []);
 
-	return (
-		<div className='col-lg-3 col-md-4 col-sm-6 mb-4  mt-5'>
-			<Card.Title style={{ fontSize: "14px", textAlign: "center" }}>
-				{/* <div style={{ fontWeight: "bold", marginBottom: "5px" }}>Category: {"categoryName"}</div> */}
-				{/* {productName} */}
-			</Card.Title>
+    const handleAddToCartClick = async () => {
+        if (!userId) {
+            console.error('User ID not found.');
+            return;
+        }
 
-			<Card>
-				<Card.Img variant='top' src={imageSrc} />
-				<Card.Body>
-					<Card.Title style={{ fontSize: "14px", textAlign: "center" }}>{productName}</Card.Title>
-					<Card.Text style={{ fontSize: "13px", textAlign: "center" }}>{productPrice}</Card.Text>
+        try {
+            await axios.post('http://localhost:8000/cartRoutes/addOrUpdateCart', {
+                userId: userId,
+                productId: productId,
+                quantity: 1, // initially add 1 item to the cart
+            });
+            setAddedToCart(true);
+            handleAddToCart(productId);
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+        }
+    };
 
-					{!addToCart ? (
-						<div style={{ fontSize: "10px", textAlign: "center" }}>
-							<Button variant='success' size='sm' onClick={handleAddToCart}>
-								Add to Cart
-							</Button>
-						</div>
-					) : (
-						<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-							<Button variant='success' size='sm' onClick={handleReduce}>
-								-
-							</Button>
-							<span>{quantity}</span>
-							<Button variant='success' size='sm' onClick={handleAdd}>
-								+
-							</Button>
-						</div>
-					)}
-				</Card.Body>
-			</Card>
-		</div>
-	);
+    return (
+        <div className='col-lg-3 col-md-4 col-sm-6 mb-4 mt-5'>
+            <Card>
+                <Card.Img variant='top' src={imageSrc} />
+                <Card.Body>
+                    <Card.Title style={{ fontSize: "14px", textAlign: "center" }}>{productName}</Card.Title>
+                    <Card.Text style={{ fontSize: "13px", textAlign: "center" }}>{productPrice}</Card.Text>
+                    {!addedToCart && (
+                        <div style={{ textAlign: "center" }}>
+                            <Link to="/ShoppingCart" style={{ textDecoration: 'none' }}>
+                                <Button variant='success' size='sm' onClick={handleAddToCartClick}>
+                                    Add to Cart
+                                </Button>
+                            </Link>
+                        </div>
+                    )}
+                </Card.Body>
+            </Card>
+        </div>
+    );
 };
 
 CustomCard.propTypes = {
-	productName: PropTypes.string.isRequired,
-	imageSrc: PropTypes.string.isRequired,
-	productPrice: PropTypes.string.isRequired,
+    productId: PropTypes.number.isRequired,
+    productName: PropTypes.string.isRequired,
+    imageSrc: PropTypes.string.isRequired,
+    productPrice: PropTypes.string.isRequired,
+    handleAddToCart: PropTypes.func.isRequired,
 };
 
 export default CustomCard;

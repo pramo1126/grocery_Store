@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import CustomCard from '../customer/Card'
+import CustomCard from '../customer/Card';
 
 const CategoryPage = () => {
     const { categoryId } = useParams();
@@ -41,10 +41,11 @@ const CategoryPage = () => {
                 {products.map((product) => (
                     <CustomCard
                         key={product.Product_ID}
+                        productId={product.Product_ID}
                         productName={product.Product_Name}
                         imageSrc={`http://localhost:8000/Uploads/Biscuits&snacks/${product.ProductImage}`}
                         productPrice={product.Price}
-                        handleAddToCart={() => handleAddToCart(product.Product_ID)}
+                        handleAddToCart={handleAddToCart}
                     />
                 ))}
             </div>

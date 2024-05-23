@@ -1,62 +1,21 @@
-
 import { createContext, useContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-const CartContext = createContext();
 import axios from 'axios';
+
+const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
-    const [cart, setCart] = useState([ ]);
+    const [cart, setCart] = useState([]);
 
-    // useEffect(() => {
-    //     console.log("Updated cart:", cart);
-    // }, [cart]);
-// useEffect(() => {
-//     const addToCart = async (product, quantityToAdd) => {
-
-//         // Retrieve the user data from localStorage
-//         const storedUser = localStorage.getItem('user');
-//         const user = storedUser ? JSON.parse(storedUser) : null;
-
-
-//         // Check if user data is available and has an ID
-//         if (!user || !user.ID) {
-//             alert('You must be logged in to add items to the cart.');
-//             console.error('User not logged in or user ID is missing');
-//             return;
-//         }
-//         try {
-//             // Make a POST request to add the product to the cart
-
-//             const response = await axios.post('http://localhost:8000/cartRoutes/addProductsCart', {
-//                 userId: user.ID,  // Use the user ID from localStorage
-//                 productId: product.Product_ID,
-//                 quantity: quantityToAdd
-//             });
-
-//             console.log('Request sent:', { userId: user.ID, productId: product.Product_ID, quantity: quantityToAdd });
-
-//             if (response.status === 200) {
-//                 // Update local cart state
-//                 console.log('Cart updated:', response.data);
-//                 // Here you might want to fetch the updated cart or update the state directly
-//             } else {
-//                 console.error('Failed to update cart:', response.data);
-//             }
-//         } catch (error) {
-//             console.error('Error updating cart:', error);
-//         }
-//     };
-
-    //     console.log("Updated cart:", cart);
     useEffect(() => {
         const fetchCart = async () => {
             try {
                 const storedUser = localStorage.getItem('user');
                 const user = storedUser ? JSON.parse(storedUser) : null;
                 if (user && user.ID) {
-                    const response = await axios.get(`http://localhost:8000/cartRoutes/getCartItems?userId=${user.ID}`);
+                    const response = await axios.get(`http://localhost:8000/cartRoutes/cart/${user.ID}`);
                     setCart(response.data);
                 }
             } catch (error) {
@@ -67,7 +26,7 @@ export const CartProvider = ({ children }) => {
         fetchCart();
     }, []);
 
-    const addToCart = async (product, quantityToAdd) => {
+    const addToCart = async (productId, quantity) => {
         const storedUser = localStorage.getItem('user');
         const user = storedUser ? JSON.parse(storedUser) : null;
 
@@ -77,39 +36,84 @@ export const CartProvider = ({ children }) => {
             return;
         }
 
-        // Update local state immediately for better responsiveness
-        const newCartItem = { ...product, quantity: quantityToAdd };
-        setCart([...cart, newCartItem]);
-
-        // Sync with server
         try {
-            const response = await axios.post('http://localhost:8000/cartRoutes/addProductsCart', {
+            const response = await axios.post('http://localhost:8000/cartRoutes/addOrUpdateCart', {
                 userId: user.ID,
-                productId: product.Product_ID,
-                quantity: quantityToAdd
+                productId,
+                quantity
             });
 
-            if (response.status !== 200) {
+            if (response.status === 200) {
+                setCart(prevCart => {
+                    const existingItem = prevCart.find(product => product.Product_ID === productId);
+                    if (existingItem) {
+                        return prevCart.map(product =>
+                            product.Product_ID === productId
+                                ? { ...product, Qty: product.Qty + quantity }
+                                : product
+                        );
+                    } else {
+                        return [...prevCart, { ...response.data, Qty: quantity }];
+                    }
+                });
+            } else {
                 console.error('Failed to update cart:', response.data);
-        // Optionally, roll back local changes if server update fails
             }
         } catch (error) {
             console.error('Error updating cart:', error);
-            // Optionally, roll back local changes if server update fails
         }
     };
 
-    const removeFromCart = (Product_ID) => {
-        console.log("Removing from cart:", Product_ID);
-        setCart(cart.filter(item => item.Product_ID !== Product_ID));
+    const removeFromCart = async (Product_ID) => {
+        const storedUser = localStorage.getItem('user');
+        const user = storedUser ? JSON.parse(storedUser) : null;
+
+        if (!user || !user.ID) {
+            alert('You must be logged in to remove items from the cart.');
+            console.error('User not logged in or user ID is missing');
+            return;
+        }
+
+        try {
+            const response = await axios.delete(`http://localhost:8000/cartRoutes/cart/${user.ID}/${Product_ID}`);
+            if (response.status === 200) {
+                setCart(prevCart => prevCart.filter(product => product.Product_ID !== Product_ID));
+            } else {
+                console.error('Failed to remove product from cart:', response.data);
+            }
+        } catch (error) {
+            console.error('Error removing product from cart:', error);
+        }
     };
 
-    const updateQuantity = (Product_ID, quantity) => {
-        console.log("Updating quantity for:", Product_ID, " New quantity:", quantity);
-        setCart(cart.map(item => item.Product_ID === Product_ID ? { ...item, quantity } : item));
-    };
+    const updateQuantity = async (Product_ID, quantity) => {
+        const storedUser = localStorage.getItem('user');
+        const user = storedUser ? JSON.parse(storedUser) : null;
 
-    console.log("Current cart:", cart);
+        if (!user || !user.ID) {
+            alert('You must be logged in to update product quantity.');
+            console.error('User not logged in or user ID is missing');
+            return;
+        } 
+
+        try {
+            const response = await axios.put(`http://localhost:8000/cartRoutes/cart/${user.ID}/${Product_ID}`, {
+                quantity
+            });
+
+            if (response.status === 200) {
+                setCart(prevCart =>
+                    prevCart.map(product =>
+                        product.Product_ID === Product_ID ? { ...product, Qty: quantity } : product
+                    )
+                );
+            } else {
+                console.error('Failed to update cart product quantity:', response.data);
+            }
+        } catch (error) {
+            console.error('Error updating cart product quantity:', error);
+        }
+    };
 
     return (
         <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity }}>
@@ -120,6 +124,6 @@ export const CartProvider = ({ children }) => {
 
 CartProvider.propTypes = {
     children: PropTypes.node.isRequired
-};
+}; 
 
 export default CartProvider;
