@@ -2,11 +2,15 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import CustomCard from '../customer/Card';
+import Navbar from '../components/Navbar/Navbar';
+import Footer from '../components/Footer';
+
 
 const CategoryPage = () => {
     const { categoryId } = useParams();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -35,10 +39,23 @@ const CategoryPage = () => {
         return <div>No products found.</div>;
     }
 
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    const filteredProducts = products.filter(product => {
+        return product.Product_Name.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+
     return (
+       <div>  <Navbar />
+       <br></br>
+            <div className="mb-3 text-center">
+                <input type="text" placeholder="Search by product name" onChange={handleSearch} className='bg-light p-2 border rounded w-50 text-dark mx-auto' />
+            </div>
         <div className="container">
             <div className="row">
-                {products.map((product) => (
+                    {filteredProducts.map((product) => (
                     <CustomCard
                         key={product.Product_ID}
                         productId={product.Product_ID}
@@ -50,6 +67,11 @@ const CategoryPage = () => {
                 ))}
             </div>
         </div>
+            <br></br> <br></br>
+            <br></br> <br></br> <br></br> <br></br>
+                        <Footer />
+        </div>
+
     );
 };
 

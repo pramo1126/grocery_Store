@@ -5,8 +5,8 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
+// import Button from "react-bootstrap/Button";
+// import Form from "react-bootstrap/Form";
 import axios from "axios";
 import Logo from "./Assets/Sameerawhite.png";
 
@@ -64,7 +64,7 @@ const NavbarComponent = ({ handleCategoryChange }) => {
                 </Container>
             </Navbar>
 
-            <div className="d-flex justify-content-center" style={{ marginTop: "20px" }}>
+            {/* <div className="d-flex justify-content-center" style={{ marginTop: "20px" }}>
                 <Form className="d-flex" style={{ maxWidth: "5000px" }}>
                     <Form.Control
                         type="search"
@@ -75,7 +75,7 @@ const NavbarComponent = ({ handleCategoryChange }) => {
                     />
                     <Button variant="outline-success">Search</Button>
                 </Form>
-            </div>
+            </div> */}
         </div>
     );
 };

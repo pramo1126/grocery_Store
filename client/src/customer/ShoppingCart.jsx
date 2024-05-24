@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer';
 import { Table, Button, Image, Container, Row, Col } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Link } from 'react-router-dom';
 
 const ShoppingCart = () => {
   const { cart, removeFromCart, updateQuantity } = useCart();
@@ -30,7 +31,7 @@ const ShoppingCart = () => {
       <Container>
         <Row className="my-4">
           <Col>
-            <h3>Shopping Cart</h3>
+            <h4>Shopping Cart</h4>
           </Col>
         </Row>
         <Row>
@@ -42,7 +43,7 @@ const ShoppingCart = () => {
                   <th>Product Name</th>
                   <th>Quantity</th>
                   <th>Unit Price (Rs)</th>
-                  <th>Total Price</th>
+                  <th>Total Price (Rs)</th>
                   <th>Remove</th>
                 </tr>
               </thead>
@@ -70,12 +71,17 @@ const ShoppingCart = () => {
           </Col>
         </Row>
         <Row>
-          <Col className="text-right">
-            <h4>Total Price: Rs {calculateTotalPrice()}</h4>
-            <Button variant="primary" size="lg">Proceed to Checkout</Button>
+        <br></br>
+          <Col className="text-end">
+            <h6>Total Price: Rs {calculateTotalPrice()}</h6>
+            <br></br>
+            <Button variant="success" size="sm" className="float-end">
+              <Link to="/Checkout" style={{ textDecoration: 'none', color: 'white' }}>Proceed to Checkout</Link>
+            </Button>
           </Col>
         </Row>
       </Container>
+      <br></br>   <br></br>  <br></br><br></br><br></br><br></br>
       <Footer />
     </div>
   );
