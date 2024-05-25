@@ -7,7 +7,7 @@ const path = require('path');
 // Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'Uploads/Products');
+        cb(null, 'Uploads/Biscuits&snacks');
     },
     filename: (req, file, cb) => {
         cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
@@ -18,14 +18,14 @@ const upload = multer({ storage: storage });
 // Add a new product
 router.post('/product', upload.single('ProductImage'), async (req, res) => {
     try {
-        const { ProductName, ProductPrice, ProductExpiryDate, Category_ID } = req.body;
+        const { ProductName, Category_ID, ProductPrice, ProductExpiryDate } = req.body;
         if (!req.file) {
             return res.status(400).json({ success: false, message: 'No file uploaded' });
         }
         const ProductImage = req.file.filename;
         const sql = 'INSERT INTO product (Product_Name, Category_ID, Price, Expiry_Date, ProductImage) VALUES (?, ?, ?, ?, ?)';
-        const [result] = await pool.query(sql, [ProductName, Category_ID, ProductPrice, ProductExpiryDate, ProductImage]);
-        res.json({ success: true, product: { id: result.insertId, ProductName, ProductPrice, ProductExpiryDate, Category_ID, ProductImage } });
+        const [result] = await pool.query(sql, [ProductName, Category_ID, ProductPrice, ProductExpiryDate,  ProductImage]);
+        res.json({ success: true, product: { id: result.insertId, ProductName, Category_ID, ProductPrice, ProductExpiryDate, ProductImage } });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: 'Internal server error' });

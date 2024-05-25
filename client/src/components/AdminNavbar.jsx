@@ -4,8 +4,26 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import PropTypes from 'prop-types';
+import axios from 'axios';
+import  { useState, useEffect } from 'react';
 
-const AdminNavbar = ({ categories }) => {
+const AdminNavbar = () => {
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/categoryRoutes/categories');
+                setCategories(response.data);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+
     return (
         <Navbar collapseOnSelect expand="lg" style={{ backgroundColor: '#F2B75E' }} variant="dark" className="black-text">
             <Container>
@@ -16,7 +34,7 @@ const AdminNavbar = ({ categories }) => {
                         <Nav.Link as={Link} to="/AdminDashboard" style={{ color: 'black' }}>Admin Dashboard</Nav.Link>
                         <NavDropdown title="Product Categories" id="collapsible-nav-dropdown">
                             {categories.map((category) => (
-                                <NavDropdown.Item as={Link} to={`/category/${category.Category_ID}`} key={category.Category_ID}>
+                                <NavDropdown.Item as={Link} to={`admin/category/${category.Category_ID}`} key={category.Category_ID}>
                                     {category.Product_Category}
                                 </NavDropdown.Item>
                             ))}

@@ -46,7 +46,6 @@ router.get("/categories", async (req, res) => {
 router.get("/category/:categoryId", async (req, res) => {
     try {
         const categoryId = req.params.categoryId;
-        // Assuming you have a table named 'productcategory' which holds your category data
         const [rows] = await pool.query('SELECT * FROM productcategory WHERE Category_ID = ?', [categoryId]);
         res.json(rows);
     } catch (err) {

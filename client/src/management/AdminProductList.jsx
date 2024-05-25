@@ -60,12 +60,12 @@ const AdminProductList = () => {
             <AdminNavbar categories={categories} />
             <div className='px-5 mt-3'>
                 <div className='d-flex justify-content-center'>
-                    <h3>Product List - {categoryId ? categories.find(category => category.Category_ID === parseInt(categoryId))?.Product_Category : 'All Products'}</h3>
+                    <h3>Product List  {categoryId ? categories.find(category => category.Category_ID === parseInt(categoryId))?.Product_Category : 'All Products'}</h3>
                 </div>
                 <div className="mb-3">
                     <input type="text" placeholder="Search by product name" onChange={handleSearch} className='bg-light p-2 border rounded w-75 text-dark'/>
                 </div>
-                <Link to={"/AddProducts"} className='btn btn-success'> Add Products </Link>
+                <Link to={"/AddProducts"} className='btn btn-success' style={{ backgroundColor: 'black', color: 'white' }}> Add Products </Link>
             </div>
             <div className='px-5 mt-3'>
                 <table className='table'>

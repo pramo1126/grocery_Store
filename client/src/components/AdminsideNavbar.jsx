@@ -17,6 +17,7 @@ const TemporaryDrawer = () => {
   const [open, setOpen] = useState(false);
   const [openProductCategories, setOpenProductCategories] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [clicked, setClicked] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -40,12 +41,12 @@ const TemporaryDrawer = () => {
   };
 
   const DrawerList = (
-    <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
+    <Box sx={{ width: 250, backgroundColor: '#F2B75E' }} role="presentation" onClick={toggleDrawer(false)}>
       <List>
         <br />
         <br />
         <br />
-        <ListItem button onClick={handleClickProductCategories}>
+        <ListItem button onClick={handleClickProductCategories} sx={{ backgroundColor: clicked ? '#E0E0E0' : 'inherit' }}>
           <ListItemText primary="Product Categories" />
           {openProductCategories ? <ExpandLess /> : <ExpandMore />}
         </ListItem>
@@ -58,7 +59,7 @@ const TemporaryDrawer = () => {
                 to={`/admin/category/${category.Category_ID}`}
                 sx={{ pl: 4 }}
               >
-                <ListItemText primary={category.Product_Category} />
+                <ListItemText primary={category.Product_Category} sx={{ color: 'black' }} />
               </ListItemButton>
             ))}
           </List>
@@ -67,7 +68,7 @@ const TemporaryDrawer = () => {
         <br />
         {['Orders', 'Purchases', 'Profile'].map((text) => (
           <ListItem key={text} disablePadding>
-            <ListItemButton component={Link} to={`/${text.toLowerCase()}`}>
+            <ListItemButton component={Link} to={`/${text.toLowerCase()}`} sx={{ color: clicked ? 'gray' : 'inherit' }}>
               <ListItemText primary={text} />
             </ListItemButton>
           </ListItem>

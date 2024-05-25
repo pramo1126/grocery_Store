@@ -48,7 +48,8 @@ function App() {
 						<Route path='/EditProduct/:category/:productId' element={<EditProduct />} />
 						<Route path='/Orders' element={<Orders />} />
 						<Route path='/ProductInventory' element={<ProductInventory />} />
-						<Route path='/CategoryForm' element={<CategoryForm />} />
+
+					<Route path='/CategoryForm' element={<CategoryForm />} />
 						<Route path='/category/:categoryId' element={<CategoryPage />} />
 						<Route path='/admin/category/:categoryId' element={<AdminProductList />} />
 						<Route path='/Checkout' element={<Checkout />} />

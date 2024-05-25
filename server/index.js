@@ -8,6 +8,7 @@ const path = require('path');
 const productRouter = require('./routes/productRoutes.js');
 const cartRouter = require('./routes/cartRoutes.js');
 const categoryRouter = require('./routes/categoryRoutes.js');
+const orderRouter = require('./routes/orderRoutes.js');
 require('dotenv').config();
 const { pool, checkConnection } = require('./config/db.js');
 
@@ -21,6 +22,7 @@ app.use(cors());
 app.use('/productRoutes', productRouter);
 app.use('/cartRoutes', cartRouter);
 app.use('/categoryRoutes', categoryRouter);
+app.use('/orderRoutes', orderRouter);
 
 const PORT = process.env.PORT || 8000;
 
