@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import AdminFooter from '../components/AdminFooter';
+// import AdminFooter from '../components/AdminFooter';
 //import { email } from '@mui/icons-material';
 import Logo from './Assets/Sameera.png'
 import axios from 'axios';
@@ -176,8 +176,8 @@ const Signup = () => {
                     </div>
                 </div>
             </div>
-            <br></br><br></br><br></br>
-            <AdminFooter />
+            <br></br><br></br><br></br> <br></br><br></br><br></br>
+            {/* <AdminFooter /> */}
         </section>
     );
 }

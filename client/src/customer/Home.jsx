@@ -89,9 +89,9 @@ const Home = () => {
                     </div>
                 </div>
                 <br></br> <br></br> <br></br>  <br></br> <br></br>
-                <div style={{ borderBottom: '1px solid grey', marginRight: '10px', marginLeft: '10px' }}></div>
+               
                 <h1 style={{ fontSize: '35px', color: 'black', fontFamily: 'sans-serif', padding: '20px', textAlign: 'center', fontWeight: 'bolder' }} >Best Sellers </h1>
-                <div style={{ borderBottom: '1px solid grey', marginRight: '10px', marginLeft: '10px' }}></div>
+                
                 <br></br> <br></br>
                 const products = [
 

@@ -46,6 +46,7 @@ const TemporaryDrawer = () => {
         <br />
         <br />
         <br />
+
         <ListItem button onClick={handleClickProductCategories} sx={{ backgroundColor: clicked ? '#E0E0E0' : 'inherit' }}>
           <ListItemText primary="Product Categories" />
           {openProductCategories ? <ExpandLess /> : <ExpandMore />}
@@ -78,7 +79,7 @@ const TemporaryDrawer = () => {
   );
 
   return (
-    <div>
+    <div className="AdminsideNavbar" style={{ position: 'fixed', top: 0, left: 0, bottom: 0, width: '250px', zIndex: 1000 }}>
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100%', justifyContent: 'flex-end' }}>
         <Box sx={{ flex: '0 0 auto', display: 'flex' }}>
           <Button onClick={toggleDrawer(true)} style={{ marginLeft: '30px' }}>Menu</Button>
