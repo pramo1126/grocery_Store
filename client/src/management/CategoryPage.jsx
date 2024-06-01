@@ -53,6 +53,8 @@ const CategoryPage = () => {
             <div className="mb-3 text-center">
                 <input type="text" placeholder="Search by product name" onChange={handleSearch} className='bg-light p-2 border rounded w-50 text-dark mx-auto' />
             </div>
+
+            
         <div className="container">
             <div className="row">
                     {filteredProducts.map((product) => (

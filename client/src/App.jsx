@@ -18,11 +18,12 @@ import EditProduct from "./management/EditProduct";
 // import AdminBeverages from "./management/AdminBeverages";
 // import AdminPasta from "./management/AdminPasta";
 import Orders from "./management/Orders";
-import ProductInventory from "./management/ProductInventory";
 import CategoryForm from "./management/CategoryForm";
 import AdminProductList from "./management/AdminProductList";
 import CategoryPage from "./management/CategoryPage";
 import Checkout from "./customer/Checkout";
+import Profile from "./customer/Profile";
+import Promotions from "./customer/Promotions";
 
 function App() {
 	return (
@@ -33,6 +34,8 @@ function App() {
 						<Route path='/Welcome' element={<Welcome />} />
 						<Route path='/Home' element={<Home />} />
 						<Route path='/Login' element={<Login />} />
+						<Route path='/Profile' element={<Profile />} />
+						<Route path='/Promotions' element={<Promotions />} />
 						{/* <Route path='/Biscuits' element={<Biscuits />} />
 						<Route path='/FrozenFoods' element={<Frozenfoods />} /> */}
 						<Route path='/ShoppingCart' element={<ShoppingCart />} />
@@ -47,7 +50,7 @@ function App() {
 						<Route path='/Pasta' element={<Pasta />} /> */}
 						<Route path='/EditProduct/:category/:productId' element={<EditProduct />} />
 						<Route path='/Orders' element={<Orders />} />
-						<Route path='/ProductInventory' element={<ProductInventory />} />
+
 
 					<Route path='/CategoryForm' element={<CategoryForm />} />
 						<Route path='/category/:categoryId' element={<CategoryPage />} />

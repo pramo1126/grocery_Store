@@ -54,11 +54,12 @@ const NavbarComponent = ({ handleCategoryChange }) => {
                                     </NavDropdown.Item>
                                 ))}
                             </NavDropdown>
-                            <Nav.Link href="#pricing">About Us</Nav.Link>
+                            <Nav.Link href="/Promotions">Promotions</Nav.Link>
                         </Nav>
                         <Nav>
                             <Nav.Link href="/ShoppingCart">Cart</Nav.Link>
                             <Nav.Link eventKey={2} href="/Login">Login</Nav.Link>
+                            <Nav.Link eventKey={2} href="/Profile">Profile</Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

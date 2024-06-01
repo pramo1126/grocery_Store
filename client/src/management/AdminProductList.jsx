@@ -1,15 +1,16 @@
-
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { useParams, Link } from 'react-router-dom';
 import AdminNavbar from '../components/AdminNavbar';
 import AdminFooter from '../components/AdminFooter';
 import axios from 'axios';
 
 const AdminProductList = () => {
-    const { categoryId } = useParams(); // Get category ID from URL
+    const { categoryId } = useParams();
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [isFiltered, setIsFiltered] = useState(false);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -30,6 +31,7 @@ const AdminProductList = () => {
                 try {
                     const response = await axios.get(`http://localhost:8000/productRoutes/products/${categoryId}`);
                     setProducts(response.data);
+                    setFilteredProducts(response.data);
                 } catch (error) {
                     console.error('Error fetching products:', error);
                 }
@@ -41,19 +43,17 @@ const AdminProductList = () => {
 
     const handleEdit = (productId) => {
         console.log('Edit:', productId);
-        // No need to return Link here, navigate directly
     };
 
     const handleDelete = async (productId) => {
-        // Display a confirmation dialog before deleting
         const confirmDelete = window.confirm('Are you sure you want to delete this product?');
 
         if (confirmDelete) {
             try {
                 const response = await axios.delete(`http://localhost:8000/productRoutes/product/${productId}`);
                 if (response.status === 200) {
-                    // Update the products list after successful deletion
                     setProducts(products.filter(product => product.Product_ID !== productId));
+                    setFilteredProducts(filteredProducts.filter(product => product.Product_ID !== productId));
                 } else {
                     console.error('Failed to delete product:', response.data);
                 }
@@ -65,11 +65,39 @@ const AdminProductList = () => {
 
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
+        setFilteredProducts(products.filter(product => product.Product_Name.toLowerCase().includes(e.target.value.toLowerCase())));
     };
 
-    const filteredProducts = products.filter(product => {
-        return product.Product_Name.toLowerCase().includes(searchTerm.toLowerCase());
-    });
+    const handleReorderFilter = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/productRoutes/product/reorder');
+            setFilteredProducts(response.data);
+            setIsFiltered(true);
+        } catch (error) {
+            console.error('Error fetching products for reorder:', error);
+        }
+    };
+
+    const handleExpiringSoonFilter = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/productRoutes/product/expiringsoon');
+            setFilteredProducts(response.data);
+            setIsFiltered(true);
+        } catch (error) {
+            console.error('Error fetching expiring soon products:', error);
+        }
+    };
+
+    const handleResetFilter = () => {
+        setFilteredProducts(products);
+        setSearchTerm('');
+        setIsFiltered(false);
+    };
+
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    };
 
     return (
         <div>
@@ -79,8 +107,14 @@ const AdminProductList = () => {
                     <h3>Product List - {categoryId ? categories.find(category => category.Category_ID === parseInt(categoryId))?.Product_Category : 'All Products'}</h3>
                 </div>
                 <div className="mb-3">
-                    <input type="text" placeholder="Search by product name" onChange={handleSearch} className='bg-light p-2 border rounded w-75 text-dark' />
+                    <input type="text" placeholder="Search by product name" value={searchTerm} onChange={handleSearch} className='bg-light p-2 border rounded w-75 text-dark' />
                 </div>
+                <div className="mb-3">
+                    <button onClick={handleReorderFilter} className='btn btn-warning mx-2'>Reorder Alert</button>
+                    <button onClick={handleExpiringSoonFilter} className='btn btn-danger mx-2'>Expiring Soon</button>
+                    <button onClick={handleResetFilter} className='btn btn-secondary mx-2'>Reset</button>
+                </div>
+                <br></br><br></br>
                 <Link to={"/AddProducts"} className='btn btn-success' style={{ backgroundColor: 'black', color: 'white' }}> Add Products </Link>
             </div>
             <div className='px-5 mt-3'>
@@ -93,6 +127,7 @@ const AdminProductList = () => {
                             <th>Product Price (Rs)</th>
                             <th>Expiry Date</th>
                             <th>Stock Amount</th>
+                            <th>Reorder Level</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -103,9 +138,9 @@ const AdminProductList = () => {
                                 <td><img src={`http://localhost:8000/Uploads/Biscuits&snacks/${product.ProductImage}`} alt={product.Product_Name} style={{ width: '100px' }} /></td>
                                 <td>{product.Product_ID}</td>
                                 <td>{product.Price}</td>
-                                <td>{product.Expiry_Date}</td>
+                                <td>{formatDate(product.Expiry_Date)}</td>
                                 <td>{product.Qty}</td>
-                               
+                                <td>{product.Reorder_Level}</td>
                                 <td>
                                     <button onClick={() => handleEdit(product.Product_ID)} className="btn" style={{ backgroundColor: '#F2B75E', marginRight: '10px' }}>
                                         <Link to={`/EditProduct/${categoryId}/${product.Product_ID}`}> Edit</Link>
@@ -117,6 +152,7 @@ const AdminProductList = () => {
                     </tbody>
                 </table>
             </div>
+            <br></br> <br></br> <br></br> <br></br> <br></br> <br></br> <br></br>
             <AdminFooter />
         </div>
     );

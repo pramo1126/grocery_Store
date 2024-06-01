@@ -281,13 +281,13 @@ const AddProductForm = () => {
 								<div className='card-body p-5'>
 									<form onSubmit={handleSubmit}>
 										<div className='form-outline mb-4'>
-											<h2
+											<h4
 												className='text- text-center mb-5'
-												style={{ fontSize: "25px", marginTop: "-120px", marginLeft: "100px" }}>
+												style={{ fontSize: "25px", marginTop: "55px", marginLeft: "100px" }}>
 												Add New Product
-											</h2>
+											</h4>
 										</div>
-										<br></br>
+										
 										<div className='form-outline mb-4'>
 											<label className='form-label' htmlFor='form3Example1cg'>
 												Product Name

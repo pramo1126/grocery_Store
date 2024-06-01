@@ -183,7 +183,7 @@ router.post('/product', upload.single('ProductImage'), async (req, res) => {
         }
         const ProductImage = req.file.filename;
         const sql = 'INSERT INTO product (Product_Name, Category_ID, Price, Expiry_Date, ProductImage, Qty, Reorder_Level) VALUES (?, ?, ?, ?, ?, ?,?)';
-        const [result] = await pool.query(sql, [ProductName, Category_ID, ProductPrice, ProductExpiryDate, ProductImage, ProductQty,ReorderLevel ]);
+        const [result] = await pool.query(sql, [ProductName, Category_ID, ProductPrice, ProductExpiryDate, ProductImage, ProductQty, ReorderLevel]);
         res.json({ success: true, product: { id: result.insertId, ProductName, ProductPrice, ProductExpiryDate, Category_ID, ProductImage, ProductQty, ReorderLevel } });
     } catch (err) {
         console.error(err);
@@ -214,7 +214,7 @@ router.put('/product/:id', upload.single('ProductImage'), async (req, res) => {
 
         const [result] = await pool.query(sql, params);
         if (result.affectedRows === 0) {
-            return res.status(404).json({ success: false, message: 'Product not found or no changes made' });
+            return res.status(404).json({ success: false, message: 'Product not found4 or no changes made' });
         }
         res.json({ success: true, message: 'Product updated successfully' });
     } catch (err) {
@@ -235,6 +235,49 @@ router.get('/products/:categoryId', async (req, res) => {
     }
 });
 
+router.get('/product/reorder', async (req, res) => {
+    try {
+        const sql = 'SELECT * FROM product WHERE Qty <= Reorder_Level';
+        const [results] = await pool.query(sql);
+        res.json(results);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+
+// Get products expiring within the next 10 days
+router.get('/product/expiringsoon', async (req, res) => {
+    try {
+        // Get the current date
+        const currentDate = new Date();
+
+        // Calculate the date 10 days from now
+        const tenDaysLater = new Date(currentDate.getTime() + 10 * 24 * 60 * 60 * 1000);
+
+        // Format the dates to match the database date format (YYYY-MM-DD)
+        const currentDateFormatted = currentDate.toISOString().split('T')[0]; // Extract YYYY-MM-DD from ISO string
+        const tenDaysLaterFormatted = tenDaysLater.toISOString().split('T')[0]; // Extract YYYY-MM-DD from ISO string
+
+        // Construct the query to fetch products expiring within the next 10 days
+        const query = `SELECT Product_ID, Product_Name, Price, Expiry_Date, ProductImage, Qty 
+                       FROM product 
+                       WHERE Expiry_Date BETWEEN '${currentDateFormatted}' AND '${tenDaysLaterFormatted}'`;
+
+        // Execute the query using promise-based syntax
+        const [results] = await pool.query(query);
+
+        // Send the results as JSON response
+        res.json(results);
+    } catch (err) {
+        // Handle errors
+        console.error('Error fetching products expiring soon:', err);
+        res.status(500).send('Failed to fetch products expiring soon');
+    }
+});
+
+
 // Get a specific product by ID
 router.get('/product/:productId', async (req, res) => {
     const { productId } = req.params;
@@ -242,7 +285,7 @@ router.get('/product/:productId', async (req, res) => {
         const sql = 'SELECT Product_Name, Category_ID, Price, Expiry_Date, ProductImage, Qty FROM product WHERE Product_ID = ?';
         const [results] = await pool.query(sql, [productId]);
         if (results.length === 0) {
-            return res.status(404).json({ success: false, message: 'Product not found' });
+            return res.status(404).json({ success: false, message: 'Product not found5' });
         }
         console.log(results)
         res.json(results[0]);
@@ -259,7 +302,7 @@ router.delete('/product/:productId', async (req, res) => {
         const sql = 'DELETE FROM product WHERE Product_ID = ?';
         const [result] = await pool.query(sql, [productId]);
         if (result.affectedRows === 0) {
-            return res.status(404).json({ success: false, message: 'Product not found' });
+            return res.status(404).json({ success: false, message: 'Product not found1' });
         }
         res.json({ success: true, message: 'Product deleted successfully' });
     } catch (err) {
@@ -268,20 +311,6 @@ router.delete('/product/:productId', async (req, res) => {
     }
 });
 
-// Get products expiring within the next 10 days
-router.get('/product/expiringsoon', (req, res) => {
-    const currentDate = new Date();
-    const tenDaysLater = new Date(currentDate.getTime() + 10 * 24 * 60 * 60 * 1000); // Calculate date 10 days from now
-    const query = 'SELECT Product_Name, Product_ID, Expiry_Date, ExpiryStatus FROM product WHERE Expiry_Date BETWEEN ? AND ?';
 
-    pool.query(query, [currentDate, tenDaysLater], (err, results) => {
-        if (err) {
-            console.error('Error fetching products expiring soon:', err);
-            res.status(500).send('Failed to fetch products expiring soon');
-        } else {
-            res.json(results);
-        }
-    });
-});
 
 module.exports = router;

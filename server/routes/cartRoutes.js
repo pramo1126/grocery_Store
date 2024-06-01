@@ -7,11 +7,25 @@ router.post('/addOrUpdateCart', async (req, res) => {
     try {
         const { userId, productId, quantity } = req.body;
 
+        // Fetch the stock quantity of the product
+        const stockQuery = `
+      SELECT qty FROM product WHERE Product_ID = ?
+    `;
+        const [stockRows] = await pool.query(stockQuery, [productId]);
+        const stockQuantity = stockRows[0].qty;
+
+        // Validate the requested quantity
+        if (quantity > stockQuantity) {
+            return res.status(400).send('Invalid quantity. Exceeds stock quantity.');
+        }
+
         const query = `
             INSERT INTO cart (ID, Product_ID, Qty) 
             VALUES (?, ?, ?) 
             ON DUPLICATE KEY UPDATE Qty = VALUES(Qty)
         `;
+
+    
 
         await pool.query(query, [userId, productId, quantity]);
         
@@ -22,7 +36,7 @@ router.post('/addOrUpdateCart', async (req, res) => {
     }
 });
 
-// Get all cart items for a user
+// // Get all cart items for a user
 router.get('/cart/:userId', async (req, res) => {
     try {
         const userId = req.params.userId;
@@ -47,6 +61,19 @@ router.put('/cart/:userId/:productId', async (req, res) => {
     try {
         const { userId, productId } = req.params;
         const { quantity } = req.body;
+
+        // Fetch the stock quantity of the product
+        const stockQuery = `
+      SELECT qty FROM product WHERE Product_ID = ?
+    `;
+        const [stockRows] = await pool.query(stockQuery, [productId]);
+        const stockQuantity = stockRows[0].qty;
+
+        // Validate the requested quantity
+        if (quantity > stockQuantity) {
+            return res.status(400).send('Invalid quantity. Exceeds stock quantity.');
+        }
+
 
         const query = `
             UPDATE cart 

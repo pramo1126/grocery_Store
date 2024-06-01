@@ -150,6 +150,7 @@ const Checkout = () => {
 
                 <div className="row justify-content-center">
                     <div className="col-md-8">
+                    <br></br>
                         <h4>Order Review</h4>
                         <ul>
                             {cart.map((product, index) => (
@@ -161,6 +162,7 @@ const Checkout = () => {
                         <p>Delivery Fee: Rs 150</p>
                         <p>Subtotal: Rs {(parseFloat(calculateTotalPrice()) + 150).toFixed(2)}</p>
                         <form>
+                            <br></br>
                             <div className="form-outline mb-4">
                                 <input type="text" id="form6Example1" className="form-control" required />
                                 <label className="form-label" htmlFor="form6Example1">Name</label>
@@ -179,14 +181,27 @@ const Checkout = () => {
                             </div>
                             {error && <div className="alert alert-danger">{error}</div>}
                             {success && <div className="alert alert-success">{success}</div>}
-                            <button type="button" onClick={handlePlaceOrder} className="btn btn-success btn-block mb-4" >
-                                Place Order
-                            </button>
-                            <button type="button" onClick={generateInvoicePDF} className="btn btn-success btn-block mb-4">Download Invoice</button>
+
+
+                            <div className="d-flex justify-content-center">
+                                <div className="mx-2">
+                                    <button type="button" onClick={handlePlaceOrder} className="btn btn-success">
+                                        Place Order
+                                    </button>
+                                </div>
+
+                                <div className="mx-2">
+                                    <button type="button" onClick={generateInvoicePDF} className="btn btn-success">
+                                        Download Invoice
+                                    </button>
+                                </div>
+                            </div>
                         </form>
                     </div>
+                    
                 </div>
             </div>
+            <br></br>    <br></br>    <br></br>
             <Footer />
         </div>
     );

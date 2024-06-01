@@ -16,10 +16,13 @@ const ShoppingCart = () => {
 
   const handleIncreaseQuantity = (productId) => {
     const product = cart.find(product => product.Product_ID === productId);
-    if (product) {
+    if (product && product.Qty < product.qty) {
       updateQuantity(productId, product.Qty + 1);
+    } else {
+      alert("Invalid quantity. Exceeds stock quantity.");
     }
   };
+
 
   const calculateTotalPrice = () => {
     return cart.reduce((total, product) => total + (product.Price * product.Qty), 0).toFixed(2);

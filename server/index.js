@@ -11,6 +11,7 @@ const categoryRouter = require('./routes/categoryRoutes.js');
 require('dotenv').config();
 const { pool, checkConnection } = require('./config/db.js');
 const orderRouter = require('./routes/orderRoutes.js')
+const adminRouter = require('./routes/adminRoutes.js')
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -23,6 +24,7 @@ app.use('/productRoutes', productRouter);
 app.use('/cartRoutes', cartRouter);
 app.use('/categoryRoutes', categoryRouter);
 app.use('/orderRoutes', orderRouter)
+app.use('/adminRoutes', adminRouter)
 
 const PORT = process.env.PORT || 8000;
 

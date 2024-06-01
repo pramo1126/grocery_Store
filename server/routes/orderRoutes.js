@@ -48,29 +48,35 @@ router.post('/saveOrder', async (req, res) => {
 });
 
 
-//display orders to admin
-router.get('/orders/:orderId', async (req, res) => {
-    const orderId = req.params.orderId;
-    const connection = await pool.getConnection();
+
+router.get('/order/getallorder', async (req, res) => {
     try {
-        const [orderDetails] = await connection.query(
-            `SELECT o.Order_ID, o.Customer_Name, o.Contact_Number, o.Grand_Total, o.Delivery_Location, op.Product_ID, op.Cart_Qty
-            FROM orders o
-            JOIN order_product op ON o.Order_ID = op.Order_ID
-            WHERE o.Order_ID = ?`,
-            [orderId]
-        );
-
-        if (orderDetails.length === 0) {
-            return res.status(404).send('Order not found');
-        }
-
-        res.render('orderDetails', { order: orderDetails[0] });
-    } catch (error) {
-        console.error('Error fetching order details:', error);
-        res.status(500).send('Error fetching order details');
-    } finally {
-        connection.release();
+        const sql = `
+            SELECT 
+                o.Order_ID,
+                o.Customer_Name,
+                o.Contact_Number,
+                o.Delivery_Location,
+                o.Notes,
+                o.Grand_Total,
+                o.Date,
+                GROUP_CONCAT(CONCAT(p.Product_Name, ' (', op.Cart_Qty, ')') SEPARATOR ', ') AS Products
+            FROM 
+                orders o
+            JOIN 
+                order_product op ON o.Order_ID = op.Order_ID
+            JOIN 
+                product p ON op.Product_ID = p.Product_ID
+            GROUP BY 
+                o.Order_ID
+            ORDER BY 
+                o.Date DESC
+        `;
+        const [results] = await pool.query(sql);
+        res.json(results);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });
 
