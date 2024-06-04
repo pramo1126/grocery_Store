@@ -67,6 +67,35 @@ router.get('/chartsData', async (req, res) => {
             }]
         };
 
+       
+
+        router.post('/revenue', async (req, res) => {
+            try {
+                const { startDate, endDate } = req.body;
+
+                // Query to fetch the total revenue between the selected start and end dates
+                const query = `
+      SELECT p.Product_Name, SUM(op.Cart_Qty) as quantity, p.Price, SUM(op.Cart_Qty * p.Price) as total
+      FROM order_product op
+      JOIN orders o ON op.Order_ID = o.Order_ID
+      JOIN product p ON op.Product_ID = p.Product_ID
+      WHERE DATE(o.Date) BETWEEN ? AND ?
+      GROUP BY p.Product_ID
+    `;
+
+                const result = await pool.query(query, [startDate, endDate]);
+                const revenueDetails = result[0];
+                const totalRevenue = revenueDetails.reduce((acc, item) => acc + item.total, 0);
+
+                res.json({ revenueDetails, totalRevenue });
+
+            } catch (error) {
+                console.error('Error generating report:', error);
+                res.status(500).send('Failed to generate report');
+            }
+        });
+        
+
         // Fetch slow products data limited to the top 5 items
         const slowProductsQuery = `SELECT Product_Name, SUM(Cart_Qty) as TotalSold 
                                    FROM order_product 

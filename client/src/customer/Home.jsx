@@ -3,23 +3,59 @@ import Navbar from '../components/Navbar/Navbar';
 import videoHome from './Assets/videoHome.mp4';
 import Footer from '../components/Footer';
 import axios from 'axios';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import snackpost from './Assets/snacks  Post (36 x 24 cm).png';
 import frozenpost from './Assets/frozenfoods  Post (36 x 24 cm).png';
 import pastapost from './Assets/pasta  Post (36 x 24 cm).png';
 import beveragepost from './Assets/beverages  Post (36 x 24 cm).png';
+import CustomCard from '../customer/Card';
 
 
 
 
 const Home = () => {
+    const [topSellingProducts, setTopSellingProducts] = useState([]);
+    const { categoryId } = useState();
+    const [product, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('http://localhost:8000/')
-        .then(res => console.log(res))
-        .catch(err => console.log(err));
-            
-        })
+        const fetchProducts = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8000/productRoutes/products/${categoryId}`);
+                setProducts(response.data);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, [categoryId]);
+
+    const handleAddToCart = (productId) => {
+        console.log('Product added to cart:', productId);
+    };
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+
+        const fetchTopSellingProducts = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/productRoutes/product/topSellingProducts');
+                setTopSellingProducts(response.data.topProductsData);
+            } catch (error) {
+                console.error('Error fetching top selling products:', error);
+            }
+        };
+
+        fetchTopSellingProducts();
+   
+
+
     return (
         <div>
             <Navbar />
@@ -93,10 +129,22 @@ const Home = () => {
                 <h1 style={{ fontSize: '35px', color: 'black', fontFamily: 'sans-serif', padding: '20px', textAlign: 'center', fontWeight: 'bolder' }} >Best Sellers </h1>
                 
                 <br></br> <br></br>
-                const products = [
+                <div className="container">
+                    <div className="row">
+                        {topSellingProducts.map((product) => (
+                            <CustomCard
+                                key={product.Product_ID}
+                                productId={product.Product_ID}
+                                productName={product.Product_Name}
+                                imageSrc={`http://localhost:8000/Uploads/Biscuits&snacks/${product.ProductImage}`}
+                                productPrice={product.Price}
+                                handleAddToCart={handleAddToCart}
+                            />
+                        ))}
 
-
-                ]
+                    </div>
+                </div>
+               
             </div>
             <Footer />
         </div>

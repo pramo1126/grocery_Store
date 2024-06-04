@@ -60,7 +60,7 @@ const AdminNavbar = ({ categories }) => {
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="me-auto">
                         <Nav.Link as={Link} to="/AdminDashboard" style={{ color: 'black' }}>Admin Dashboard</Nav.Link>
-                        <NavDropdown title="Product Categories" id="collapsible-nav-dropdown">
+                        <NavDropdown title="Product Categories" id="collapsible-nav-dropdown" style={{ color: 'black' }}>
                             {categories.map((category) => (
                                 <NavDropdown.Item as={Link} to={`/admin/category/${category.Category_ID}`} key={category.Category_ID}>
                                     {category.Product_Category}
@@ -71,7 +71,8 @@ const AdminNavbar = ({ categories }) => {
                         <Nav.Link as={Link} to="/ProductInventory" style={{ color: 'black' }}>Product Inventory</Nav.Link>
                     </Nav>
                     <Nav>
-                        <Nav.Link as={Link} to="/Login" style={{ color: 'black' }}>Logout</Nav.Link>
+                        <Nav.Link as={Link} to="/Login" style={{ color: 'black' }} onClick={() => window.alert('Are you sure you want to logout?')}
+                        >Logout</Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
             </Container>

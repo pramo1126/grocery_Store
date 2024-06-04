@@ -139,6 +139,7 @@ const EditProductForm = () => {
     ProductImage: "",
     ProductCategory: "",
     ProductQty: "",
+    ReorderLevel: "",
   });
 
   const [categories, setCategories] = useState([]);
@@ -164,6 +165,7 @@ const EditProductForm = () => {
           ProductImage: product.ProductImage,
           ProductCategory: product.Category_ID,
           ProductQty: product.Qty,
+          ReorderLevel: product.Reorder_Level,
         });
         setExpiryDate(new Date(product.Expiry_Date));
       })
@@ -179,6 +181,7 @@ const EditProductForm = () => {
     formData.append("ProductImage", values.ProductImage);
     formData.append("Category_ID", values.ProductCategory);
     formData.append("ProductQty", values.ProductQty);
+    formData.append("ReorderLevel", values.ReorderLevel);
 
     axios
       .put(`http://localhost:8000/productRoutes/product/${productId}`, formData)
@@ -228,11 +231,11 @@ const EditProductForm = () => {
                     <div className='form-outline mb-4'>
                       <h2
                         className='text-center mb-5'
-                        style={{ fontSize: "25px", marginTop: "-120px", marginLeft: "100px" }}>
+                        style={{ fontSize: "25px", marginTop: "20px", marginLeft: "40px" }}>
                         Edit Product
                       </h2>
                     </div>
-                    <br></br>
+                    
                     <div className='form-outline mb-4'>
                       <label className='form-label' htmlFor='ProductName'>
                         Product Name
@@ -310,6 +313,21 @@ const EditProductForm = () => {
                     </div>
 
                     <div className='form-outline mb-4'>
+                      <label className='form-label' htmlFor='ReorderLevel'>
+                        Reorder Level
+                      </label>
+                      <input
+                        type='text'
+                        id='ReorderLevel'
+                        className='form-control form-control-lg'
+                        onChange={handleInput}
+                        name='ReorderLevel'
+                        value={values.ReorderLevel}
+                        style={{ fontSize: "13px" }}
+                      />
+                    </div>
+
+                    <div className='form-outline mb-4'>
                       <label className='form-label' htmlFor='ProductImage'>
                         Product Image
                       </label>
@@ -338,7 +356,7 @@ const EditProductForm = () => {
           </div>
         </div>
       </div>
-      <br></br>
+      <br></br><br></br><br></br>
     </section>
   );
 };

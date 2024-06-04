@@ -283,7 +283,7 @@ const AddProductForm = () => {
 										<div className='form-outline mb-4'>
 											<h4
 												className='text- text-center mb-5'
-												style={{ fontSize: "25px", marginTop: "55px", marginLeft: "100px" }}>
+												style={{ fontSize: "25px", marginTop: "55px", marginLeft: "40px" }}>
 												Add New Product
 											</h4>
 										</div>

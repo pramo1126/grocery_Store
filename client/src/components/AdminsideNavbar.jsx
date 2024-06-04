@@ -67,7 +67,7 @@ const TemporaryDrawer = () => {
         </Collapse>
         <Divider />
         <br />
-        {['Orders', 'Purchases', 'Profile'].map((text) => (
+        {['Orders', 'Profile'].map((text) => (
           <ListItem key={text} disablePadding>
             <ListItemButton component={Link} to={`/${text.toLowerCase()}`} sx={{ color: clicked ? 'gray' : 'inherit' }}>
               <ListItemText primary={text} />

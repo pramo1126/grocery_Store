@@ -193,9 +193,6 @@ router.post('/product', upload.single('ProductImage'), async (req, res) => {
 
 
 
-
-
-// Update a product
 // Update a product
 router.put('/product/:id', upload.single('ProductImage'), async (req, res) => {
     const { id } = req.params;
@@ -226,7 +223,7 @@ router.put('/product/:id', upload.single('ProductImage'), async (req, res) => {
 router.get('/products/:categoryId', async (req, res) => {
     const { categoryId } = req.params;
     try {
-        const sql = 'SELECT Product_ID, Product_Name, Price, Expiry_Date, ProductImage, Qty FROM product WHERE Category_ID = ?';
+        const sql = 'SELECT Product_ID, Product_Name, Price, Expiry_Date, ProductImage, Qty, Reorder_Level FROM product WHERE Category_ID = ?';
         const [results] = await pool.query(sql, [categoryId]);
         res.json(results);
     } catch (err) {
@@ -237,7 +234,7 @@ router.get('/products/:categoryId', async (req, res) => {
 
 router.get('/product/reorder', async (req, res) => {
     try {
-        const sql = 'SELECT * FROM product WHERE Qty <= Reorder_Level';
+        const sql = 'SELECT Product_ID, Product_Name, Price, Expiry_Date, ProductImage, Qty, Reorder_Level  FROM product WHERE Qty <= Reorder_Level';
         const [results] = await pool.query(sql);
         res.json(results);
     } catch (err) {
@@ -261,7 +258,7 @@ router.get('/product/expiringsoon', async (req, res) => {
         const tenDaysLaterFormatted = tenDaysLater.toISOString().split('T')[0]; // Extract YYYY-MM-DD from ISO string
 
         // Construct the query to fetch products expiring within the next 10 days
-        const query = `SELECT Product_ID, Product_Name, Price, Expiry_Date, ProductImage, Qty 
+        const query = `SELECT Product_ID, Product_Name, Price, Expiry_Date, ProductImage, Qty, Reorder_Level 
                        FROM product 
                        WHERE Expiry_Date BETWEEN '${currentDateFormatted}' AND '${tenDaysLaterFormatted}'`;
 
@@ -282,7 +279,7 @@ router.get('/product/expiringsoon', async (req, res) => {
 router.get('/product/:productId', async (req, res) => {
     const { productId } = req.params;
     try {
-        const sql = 'SELECT Product_Name, Category_ID, Price, Expiry_Date, ProductImage, Qty FROM product WHERE Product_ID = ?';
+        const sql = 'SELECT Product_Name, Category_ID, Price, Expiry_Date, ProductImage, Qty, Reorder_Level FROM product WHERE Product_ID = ?';
         const [results] = await pool.query(sql, [productId]);
         if (results.length === 0) {
             return res.status(404).json({ success: false, message: 'Product not found5' });
@@ -311,6 +308,24 @@ router.delete('/product/:productId', async (req, res) => {
     }
 });
 
+
+router.get('/product/topSellingProducts', async (req, res) => {
+    try {
+        const topProductsQuery = `SELECT Product_Name, SUM(Cart_Qty) as TotalSold
+      FROM order_product
+      JOIN product ON order_product.Product_ID = product.Product_ID
+      GROUP BY Product_Name
+      ORDER BY TotalSold DESC
+      LIMIT 5`;
+        const topProductsResult = await pool.query(topProductsQuery);
+        const topProductsData = topProductsResult[0];
+
+        res.json({ topProductsData });
+    } catch (error) {
+        console.error('Error fetching top selling products:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 
 module.exports = router;

@@ -6,6 +6,12 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import 'chart.js/auto';
 import './Admin.css';
+import 'react-datepicker/dist/react-datepicker.css';
+import DatePicker from 'react-datepicker';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
+
 
 const Admin = () => {
   const [topProductsData, setTopProductsData] = useState({});
@@ -15,6 +21,109 @@ const Admin = () => {
   const [categoryWiseItems, setCategoryWiseItems] = useState({});
   const [totalCustomers, setTotalCustomers] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
+  const handleGenerateReport = async () => {
+    try {
+      console.log('Fetching data from the server...');
+      // Fetch the data from the server
+      const response = await axios.post('http://localhost:8000/AdminRoutes/revenue', {
+        startDate: startDate.toISOString().slice(0, 10),
+        endDate: endDate.toISOString().slice(0, 10),
+      });
+
+
+      console.log('Data fetched successfully:', response.data);
+
+      const { revenueDetails, totalRevenue } = response.data;
+
+      // Populate the data array for the PDF report
+      const data = revenueDetails.map((item) => [
+        item.Product_Name,
+        item.quantity,
+        item.Price,
+        item.total,
+      ]);
+
+     
+
+      console.log('Data for PDF report:', data);
+
+      // Calculate the total revenue
+      let total = 0;
+      revenueDetails.forEach((item) => {
+        total += item.total;
+      });
+
+      // Add the total revenue to the data array
+      data.push(['', '', '', 'Total Revenue:', total]);
+      console.log('Data with total revenue:', data);
+      // Create a new PDF document
+      const pdf = new jsPDF('p', 'pt', 'letter');
+
+      // Add a header to the document
+      pdf.setFontSize(18);
+     pdf.setTextColor(40); // gray color
+      // doc.setFontAlignment('center');
+      pdf.text('Sameera Grocery Store - Revenue Report', 120, 75);
+
+      // Add a subheader with the date range
+     pdf.setFontSize(14);
+      pdf.setTextColor(100); // lighter gray color
+      // doc.setFontAlignment('center');
+      pdf.text(`Date Range: ${startDate.toISOString().slice(0, 10)} - ${endDate.toISOString().slice(0, 10)}`, 135, 100);
+
+      // // Add a line break
+      // pdf.text('', '\n');
+
+      // Define the table's columns
+      const columns = [
+        { title: 'Product', dataKey: 'product' },
+        { title: 'Quantity', dataKey: 'quantity' },
+        { title: 'Price', dataKey: 'price' },
+        { title: 'Total', dataKey: 'total' },
+      ];
+
+      // Add the table to the document
+      pdf.autoTable(columns, data.slice(0, -1), {
+        startY: 140,
+        styles: {
+          fontSize: 11,
+          cellPadding: 3,
+        },
+        columnStyles: {
+          0: { cellWidth: 180 }, // set the width of the first column
+          1: { cellWidth: 0 }, // set the width of the second column
+          2: { cellWidth: 100 }, // set the width of the third column
+          3: { cellWidth: 120 }, // set the width of the fourth column
+        },
+
+       didParseCell: (data) => {
+        // If the cell is in the last row and the first column, set the text to 'Total Revenue:'
+        if (data.row.index === data.table.body.length && data.column.index === 0) {
+          data.cell.text = 'Total Revenue:';
+        }
+      }
+    });
+
+      // Add a row for the total revenue
+      pdf.setFontSize(14);
+      pdf.setTextColor(40); // gray color
+      // pdf.text(data[data.length - 1][3].join(''), 360, pdf.lastAutoTable.finalY + 10);
+
+
+
+      // Save the document and trigger a download
+      pdf.save('revenue_report.pdf');
+
+      // Display a success message
+      alert('Report downloaded successfully');
+
+    } catch (error) {
+      console.error('Error generating report:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,6 +154,7 @@ const Admin = () => {
         console.error('Error fetching data:', error);
       }
     };
+
 
     fetchData();
   }, []);
@@ -93,14 +203,44 @@ const Admin = () => {
             <div className="col-md-6 chart">
               <h3>Revenue Received from Orders Each Day</h3>
               <Bar data={revenueData} />
+                <br></br><br></br>
+                {/* Add the form for generating the revenue report */}
+                <form>
+                  <div className="form-group">
+                    <label htmlFor="startDate">Start Date:</label>
+                    {/* Replace the input element with the DatePicker component */}
+                    <DatePicker
+                      id="startDate"
+                      selected={startDate} // Use the selected prop to bind the state
+                      onChange={(date) => setStartDate(date)} // Use the onChange prop to update the state
+                      className="form-control"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="endDate">End Date:</label>
+                    {/* Replace the input element with the DatePicker component */}
+                    <DatePicker
+                      id="endDate"
+                      selected={endDate} // Use the selected prop to bind the state
+                      onChange={(date) => setEndDate(date)} // Use the onChange prop to update the state
+                      className="form-control"
+                    />
+                  </div>
+                  <button type="button" onClick={handleGenerateReport} className="btn btn-primary mt-3">
+                    Generate Report
+                  </button>
+                </form>
+
             </div>
+            
           )}
           {Object.keys(slowProductsData).length > 0 && (
             <div className="col-md-6 chart">
               <h3>Slow Moving Products</h3>
               <Pie data={slowProductsData} />
             </div>
-          )}
+          )} 
+
           {Object.keys(categoryWiseItems).length > 0 && (
             <div className="col-md-6 chart">
               <h3>Category Wise Items</h3>
