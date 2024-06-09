@@ -13,11 +13,14 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import Divider from '@mui/material/Divider';
 import axios from 'axios';
 
+
 const TemporaryDrawer = () => {
   const [open, setOpen] = useState(false);
   const [openProductCategories, setOpenProductCategories] = useState(false);
   const [categories, setCategories] = useState([]);
   const [clicked, setClicked] = useState(false);
+
+
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -46,7 +49,9 @@ const TemporaryDrawer = () => {
         <br />
         <br />
         <br />
-
+        <ListItem button onClick={() => history.push("/AdminDashboard")} sx={{ backgroundColor: clicked ? '#E0E0E0' : 'inherit' }}>
+          <ListItemText primary="Admin Dashboard" />
+        </ListItem>
         <ListItem button onClick={handleClickProductCategories} sx={{ backgroundColor: clicked ? '#E0E0E0' : 'inherit' }}>
           <ListItemText primary="Product Categories" />
           {openProductCategories ? <ExpandLess /> : <ExpandMore />}
@@ -67,7 +72,7 @@ const TemporaryDrawer = () => {
         </Collapse>
         <Divider />
         <br />
-        {['Orders', 'Profile'].map((text) => (
+        {['Orders', 'Suppliers', 'Profile'].map((text) => (
           <ListItem key={text} disablePadding>
             <ListItemButton component={Link} to={`/${text.toLowerCase()}`} sx={{ color: clicked ? 'gray' : 'inherit' }}>
               <ListItemText primary={text} />

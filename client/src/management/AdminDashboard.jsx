@@ -23,9 +23,12 @@ const Admin = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleGenerateReport = async () => {
     try {
+      setLoading(true); // Set loading to true when starting PDF generation
+
       console.log('Fetching data from the server...');
       // Fetch the data from the server
       const response = await axios.post('http://localhost:8000/AdminRoutes/revenue', {
@@ -36,7 +39,7 @@ const Admin = () => {
 
       console.log('Data fetched successfully:', response.data);
 
-      const { revenueDetails, totalRevenue } = response.data;
+      const { revenueDetails } = response.data;
 
       // Populate the data array for the PDF report
       const data = revenueDetails.map((item) => [
@@ -51,13 +54,13 @@ const Admin = () => {
       console.log('Data for PDF report:', data);
 
       // Calculate the total revenue
-      let total = 0;
+      let totalRevenue = 0;
       revenueDetails.forEach((item) => {
-        total += item.total;
+        totalRevenue += item.total;
       });
 
       // Add the total revenue to the data array
-      data.push(['', '', '', 'Total Revenue:', total]);
+      data.push(['', '', '', 'Total Revenue:', totalRevenue]);
       console.log('Data with total revenue:', data);
       // Create a new PDF document
       const pdf = new jsPDF('p', 'pt', 'letter');
@@ -117,11 +120,13 @@ const Admin = () => {
       // Save the document and trigger a download
       pdf.save('revenue_report.pdf');
 
-      // Display a success message
-      alert('Report downloaded successfully');
-
+      setTimeout(() => {
+        setLoading(false); // Set loading to false when PDF generation is complete
+        alert('Report downloaded successfully');
+      }, 2000); // Simulating a 2-second delay
     } catch (error) {
       console.error('Error generating report:', error);
+      setLoading(false); // Set loading to false in case of an error
     }
   };
 
@@ -226,7 +231,13 @@ const Admin = () => {
                       className="form-control"
                     />
                   </div>
-                  <button type="button" onClick={handleGenerateReport} className="btn btn-primary mt-3">
+             
+                  <button
+                    type="button"
+                    onClick={handleGenerateReport}
+                    style={{ cursor: loading ? 'wait' : 'pointer' }}
+                    className={`btn btn-primary mt-3`}
+                  >
                     Generate Report
                   </button>
                 </form>

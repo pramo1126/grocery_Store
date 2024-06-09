@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { pool } = require('../config/db.js');
 
+
+
+
+
 // POST route to save order details
 router.post('/saveOrder', async (req, res) => {
     const connection = await pool.getConnection();
@@ -37,7 +41,7 @@ router.post('/saveOrder', async (req, res) => {
 
         await connection.commit();
 
-        res.status(201).send('Order saved successfully and product quantities updated');
+        res.status(201).send('Order saved successfully and You will receive within next few hours');
     } catch (error) {
         await connection.rollback();
         console.error('Error saving order:', error);
@@ -46,6 +50,9 @@ router.post('/saveOrder', async (req, res) => {
         connection.release();
     }
 });
+
+
+
 
 
 

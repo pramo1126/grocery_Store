@@ -68,7 +68,7 @@ const AdminNavbar = ({ categories }) => {
                             ))}
                         </NavDropdown>
                         <Nav.Link as={Link} to="/Orders" style={{ color: 'black' }}>Orders</Nav.Link>
-                        <Nav.Link as={Link} to="/ProductInventory" style={{ color: 'black' }}>Product Inventory</Nav.Link>
+                        <Nav.Link as={Link} to="/suppliers" style={{ color: 'black' }}>Suppliers</Nav.Link>
                     </Nav>
                     <Nav>
                         <Nav.Link as={Link} to="/Login" style={{ color: 'black' }} onClick={() => window.alert('Are you sure you want to logout?')}

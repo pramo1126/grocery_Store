@@ -20,6 +20,17 @@ const Orders = () => {
     fetchOrders();
   }, []);
 
+
+  const handleCancel = (orderId) => {
+    // Implement cancel logic here
+    console.log(`Cancel order with ID: ${orderId}`);
+  };
+
+  const handleStatusChange = (orderId, status) => {
+    // Implement status change logic here
+    console.log(`Change status of order with ID ${orderId} to ${status}`);
+  };
+
   return (
     <div >
     <AdminsideNavbar/>
@@ -40,6 +51,7 @@ const Orders = () => {
               <th>Grand Total</th>
               <th>Date</th>
               <th>Products</th>
+                <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -53,6 +65,21 @@ const Orders = () => {
                 <td>{order.Grand_Total}</td>
                 <td>{new Date(order.Date).toLocaleDateString()}</td>
                 <td>{order.Products}</td>
+                <td>
+                 
+                  
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ position: 'relative', display: 'inline-block' }} className="dropdown">
+                      <select style={{ backgroundColor: '#f2f2f2', color: 'black', padding: '10px', fontSize: '16px', border: 'none' }} onChange={(e) => handleStatusChange(order.Order_ID, e.target.value)} defaultValue="default">
+                        <option value="default" disabled>Select Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                      </select>
+                    </div>
+                  <br></br>  <br></br> 
+                  <button className='btn btn-danger mx-2' onClick={() => handleCancel(order.Order_ID)}>Cancel</button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>

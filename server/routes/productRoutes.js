@@ -327,5 +327,54 @@ router.get('/product/topSellingProducts', async (req, res) => {
     }
 });
 
+// Backend route to fetch supplier details
+router.get('/suppliers/getallsuppliers', async (req, res) => {
+    try {
+        const sql = `
+            SELECT  Supplier_Name, Supplier_Address, Supplier_ContactNo, Supplier_Email FROM suppliers
+               
+        `;
+        const [results] = await pool.query(sql);
+        res.json(results);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+// Add a new supplier
+router.post('/supplier', async (req, res) => {
+    try {
+        const { SupplierName, SupplierAddress, SupplierContactNo, SupplierEmail } = req.body;
+
+        const sql = 'INSERT INTO suppliers (Supplier_Name, Supplier_Address, Supplier_ContactNo, Supplier_Email) VALUES (?, ?, ?, ?)';
+        const [result] = await pool.query(sql, [SupplierName, SupplierAddress, SupplierContactNo, SupplierEmail]);
+
+        res.json({ success: true, supplier: { id: result.insertId, SupplierName, SupplierAddress, SupplierContactNo, SupplierEmail } });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+// Delete a supplier
+router.delete('/suppliers/:Supplier_ID', async (req, res) => {
+    const { Supplier_ID } = req.params;
+
+    try {
+        const sql = 'DELETE FROM suppliers WHERE Supplier_ID = ?';
+        const [result] = await pool.query(sql, [Supplier_ID]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: 'Supplier not found' });
+        }
+
+        res.json({ success: true, message: 'Supplier deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
 
 module.exports = router;

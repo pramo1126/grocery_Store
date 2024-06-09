@@ -24,6 +24,9 @@ import CategoryPage from "./management/CategoryPage";
 import Checkout from "./customer/Checkout";
 import Profile from "./customer/Profile";
 import Promotions from "./customer/Promotions";
+import Purchases from "./management/Purchases";
+import AddSuppliers from "./management/AddSuppliers";
+
 
 function App() {
 	return (
@@ -50,12 +53,12 @@ function App() {
 						<Route path='/Pasta' element={<Pasta />} /> */}
 						<Route path='/EditProduct/:category/:productId' element={<EditProduct />} />
 						<Route path='/Orders' element={<Orders />} />
-
-
+						<Route path='/suppliers' element={<Purchases />} />
 					<Route path='/CategoryForm' element={<CategoryForm />} />
 						<Route path='/category/:categoryId' element={<CategoryPage />} />
 						<Route path='/admin/category/:categoryId' element={<AdminProductList />} />
 						<Route path='/Checkout' element={<Checkout />} />
+						<Route path="/AddSuppliers" element={<AddSuppliers />} />
 					</Routes>
 				</BrowserRouter>
 			</CartProvider>

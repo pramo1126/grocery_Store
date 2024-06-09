@@ -11,6 +11,20 @@ const CategoryPage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/categoryRoutes/categories');
+                setCategories(response.data);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -50,6 +64,10 @@ const CategoryPage = () => {
     return (
        <div>  <Navbar />
        <br></br>
+            <div className='d-flex justify-content-center'>
+                <h3>Products - {categoryId ? categories.find(category => category.Category_ID === parseInt(categoryId))?.Product_Category : 'All Products'}</h3>
+            </div>
+            <br></br>
             <div className="mb-3 text-center">
                 <input type="text" placeholder="Search by product name" onChange={handleSearch} className='bg-light p-2 border rounded w-50 text-dark mx-auto' />
             </div>

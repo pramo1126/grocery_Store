@@ -6,7 +6,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer';
-import Logo from "../components/Navbar/Assets/Sameerawhite.png"
+import Logo from "../components/Navbar/Assets/Sameera.png"
 
 const Checkout = () => {
     const { cart } = useCart();
@@ -68,19 +68,36 @@ const Checkout = () => {
             const logoData = event.target.result;
 
             // Add the logo
-            pdf.addImage(logoData, 'PNG', 14, 10, 50, 20);
+            const logoWidth = 50; // Adjust the width of the logo as needed
+            const logoHeight = 50; // Adjust the height of the logo as needed
+            const logoX = 105 - (logoWidth / 2); // Center the logo horizontally
+            const logoY = 40 - logoHeight; // Align the logo with the text "Sameera Grocery Store"
+
+            pdf.addImage(logoData, 'PNG', logoX, logoY, logoWidth, logoHeight);
+
 
             // Add the shop details
             pdf.setFontSize(16);
             pdf.setFont('helvetica', 'bold');
-            pdf.text('Sameera Grocery Store', 70, 22);
-            pdf.setFontSize(12);
-            pdf.setFont('helvetica', 'normal');
-            pdf.text('Dadalla Road, Galle', 70, 28);
+            const shopName = 'Sameera Grocery Store';
+            const shopAddress = 'Dadalla Road, Galle';
+            const shopNameWidth = pdf.getStringUnitWidth(shopName) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
+            const shopAddressWidth = pdf.getStringUnitWidth(shopAddress) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
+            const centerX = (pdf.internal.pageSize.getWidth() / 2) - (Math.max(shopNameWidth, shopAddressWidth) / 2);
+
+            pdf.text(shopName, centerX, 22);
+            pdf.text(shopAddress, centerX, 28);
 
             // Add invoice title
             pdf.setFontSize(20);
+            pdf.setFont('helvetica', 'bold');
             pdf.text('Invoice', 105, 40, { align: 'center' });
+
+            // Add current date and time
+            const currentDate = new Date().toLocaleDateString();
+            const currentTime = new Date().toLocaleTimeString();
+            pdf.setFontSize(12);
+            pdf.text(`Date: ${currentDate} ${currentTime}`, 105, 50, { align: 'center' });
 
             // Add customer details
             const customerName = document.getElementById('form6Example1').value;
