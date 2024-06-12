@@ -4,8 +4,13 @@ import './Admin.css';
 import AdminsideNavbar from '../components/AdminsideNavbar';
 import AdminFooter from '../components/AdminFooter';
 
+
 const Orders = () => {
   const [orders, setOrders] = useState([]);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
+  
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -21,14 +26,36 @@ const Orders = () => {
   }, []);
 
 
-  const handleCancel = (orderId) => {
-    // Implement cancel logic here
-    console.log(`Cancel order with ID: ${orderId}`);
+  const handleCancel = async (orderId) => {
+    const confirmDelete = window.confirm('Are you sure you want to cancel and delete this order?');
+    if (confirmDelete) {
+      try {
+        await axios.delete(`http://localhost:8000/orderRoutes/order/cancel/${orderId}`);
+        // Update the state to reflect the deleted order
+        setOrders(orders.filter(order => order.Order_ID !== orderId));
+        console.log(`Order with ID ${orderId} has been canceled and deleted`);
+      } catch (error) {
+        console.error('Error canceling order:', error);
+        // Handle error scenario
+      }
+    }
   };
 
   const handleStatusChange = (orderId, status) => {
     // Implement status change logic here
     console.log(`Change status of order with ID ${orderId} to ${status}`);
+  };
+
+  const filterOrdersByDateRange = () => {
+    if (startDate && endDate) {
+      const filteredOrders = orders.filter(order => {
+        const orderDate = new Date(order.Date);
+        return orderDate >= startDate && orderDate <= endDate;
+      });
+      return filteredOrders;
+    } else {
+      return orders;
+    }
   };
 
   return (
@@ -40,6 +67,20 @@ const Orders = () => {
       <div className="order-table">
         <h2>Orders</h2>
           <br></br>
+          <input
+            type="date"
+            value={startDate ? startDate.toISOString().split('T')[0] : ''}
+            onChange={(e) => setStartDate(new Date(e.target.value))}
+            onFocus={(e) => e.target.type = 'date'} // Ensure calendar appears on focus
+            style={{ marginRight: '10px' }} // Add margin between the date input boxes
+          />
+          <input
+            type="date"
+            value={endDate ? endDate.toISOString().split('T')[0] : ''}
+            onChange={(e) => setEndDate(new Date(e.target.value))}
+            onFocus={(e) => e.target.type = 'date'} // Ensure calendar appears on focus
+          />
+          <br></br>     <br></br>
         <table className="table">
           <thead>
             <tr>
@@ -55,7 +96,7 @@ const Orders = () => {
             </tr>
           </thead>
           <tbody>
-            {orders.map(order => (
+              {(startDate && endDate ? filterOrdersByDateRange() : orders).map(order => (
               <tr key={order.Order_ID}>
                 <td>{order.Order_ID}</td>
                 <td>{order.Customer_Name}</td>

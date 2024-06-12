@@ -87,4 +87,21 @@ router.get('/order/getallorder', async (req, res) => {
     }
 });
 
+router.delete('/order/cancel/:orderId', async (req, res) => {
+    const orderId = req.params.orderId;
+    try {
+        try {
+            const sql = `DELETE FROM orders WHERE Order_ID = ?`;
+            await pool.query(sql, [orderId]);
+            res.json({ success: true, message: `Order with ID ${orderId} has been canceled and deleted` });
+        } catch (deleteError) {
+            console.error('Error deleting order:', deleteError);
+            res.status(500).json({ success: false, message: 'Error deleting order' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
 module.exports = router;

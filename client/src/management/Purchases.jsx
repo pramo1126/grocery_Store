@@ -25,24 +25,23 @@ const Purchases = () => {
         fetchsuppliers();
     }, []);
 
-    
+    const handleDelete = async (supplierId) => {
+        const confirmDelete = window.confirm('Are you sure you want to delete this supplier?');
 
-    const handleDelete = async (Supplier_ID) => {
-        const isConfirmed = window.confirm("Are you sure you want to delete this supplier?");
-
-        if (isConfirmed) {
+        if (confirmDelete) {
             try {
-                const response = await axios.delete(`http://localhost:8000/productRoutes/suppliers/${Supplier_ID}`);
-                if (response.status === 200) {
-                    setSuppliers(suppliers.filter(supplier => supplier.Supplier_ID !== Supplier_ID));
-                } else {
-                    console.error('Failed to delete supplier:', response.data);
-                }
+                await axios.delete(`http://localhost:8000/supplier/delete/${supplierId}`);
+                // Update the state or refresh the supplier list after deletion
+                setSuppliers(suppliers.filter(supplier => supplier.Supplier_ID !== supplierId));
+                console.log(`Supplier with ID ${supplierId} has been deleted`);
             } catch (error) {
                 console.error('Error deleting supplier:', error);
+                // Handle error as needed
             }
         }
     };
+
+    
     
 
     return (

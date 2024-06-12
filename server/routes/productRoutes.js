@@ -358,23 +358,17 @@ router.post('/supplier', async (req, res) => {
 });
 
 // Delete a supplier
-router.delete('/suppliers/:Supplier_ID', async (req, res) => {
-    const { Supplier_ID } = req.params;
+router.delete('/supplier/delete/:supplierId', async (req, res) => {
+    const supplierId = req.params.supplierId;
 
     try {
-        const sql = 'DELETE FROM suppliers WHERE Supplier_ID = ?';
-        const [result] = await pool.query(sql, [Supplier_ID]);
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ success: false, message: 'Supplier not found' });
-        }
-
-        res.json({ success: true, message: 'Supplier deleted successfully' });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        const sql = `DELETE FROM suppliers WHERE Supplier_ID = ?`;
+        await pool.query(sql, [supplierId]);
+        res.json({ success: true, message: `Supplier with ID ${supplierId} has been deleted successfully` });
+    } catch (error) {
+        console.error('Error deleting supplier:', error);
+        res.status(500).json({ success: false, message: 'Error deleting supplier' });
     }
 });
-
 
 module.exports = router;

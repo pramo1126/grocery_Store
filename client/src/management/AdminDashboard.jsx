@@ -180,16 +180,16 @@ const Admin = () => {
           </div>
         </div>
 
-        <div className="row stats">
-          <div className="col-md-6 stat-item bg-info text-white">
-            <h2>Total Customers</h2>
-            <p>{totalCustomers}</p>
+          <div className="row stats">
+            <div className="col-md-6 stat-item bg-info text-white" style={{ backgroundColor: '#F2B75E' }}>
+              <h2>Total Customers</h2>
+              <p>{totalCustomers}</p>
+            </div>
+            <div className="col-md-6 stat-item bg-success text-white" style={{ backgroundColor: '#F2B75E' }}>
+              <h2>Total Items</h2>
+              <p>{totalItems}</p>
+            </div>
           </div>
-          <div className="col-md-6 stat-item bg-success text-white">
-            <h2>Total Items</h2>
-            <p>{totalItems}</p>
-          </div>
-        </div>
 
         <div className="row charts">
           {Object.keys(topProductsData).length > 0 && (
