@@ -40,20 +40,29 @@ const Login = () => {
         setErrors(newErrors);
     };
 
+
     const handleLogin = async () => {
+        console.log("Attempting login...");
         validateInput();
         if (!errors.email && !errors.password) {
             try {
                 const response = await axios.post('http://localhost:8000/Login', values);
+                console.log("Response from server:", response.data);
                 if (response.data.success) {
                     const destination = response.data.destination;
                     localStorage.setItem('user', JSON.stringify(response.data.user));
                     navigate(destination);
                 } else {
-                    alert("Something went wrong. Please try again.");
+                    console.log("Login unsuccessful. Showing alert message.");
+                    window.alert("Incorrect email or password. Please try again.");
                 }
             } catch (error) {
-                console.error(error);
+                if (error.response.status === 401) {
+                    console.error("Unauthorized access. Showing alert message.");
+                    window.alert("Incorrect email or password. Please try again.");
+                } else {
+                    console.error("Error during login:", error);
+                }
             }
         }
     };

@@ -48,7 +48,7 @@ const Checkout = () => {
                 Qty: product.Qty
             })))
         };
-    
+
         await saveOrderDetails(orderData);
     };
 
@@ -167,7 +167,7 @@ const Checkout = () => {
 
                 <div className="row justify-content-center">
                     <div className="col-md-8">
-                    <br></br>
+                        <br></br>
                         <h4>Order Review</h4>
                         <ul>
                             {cart.map((product, index) => (
@@ -215,7 +215,7 @@ const Checkout = () => {
                             </div>
                         </form>
                     </div>
-                    
+
                 </div>
             </div>
             <br></br>    <br></br>    <br></br>

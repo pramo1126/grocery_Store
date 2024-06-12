@@ -171,9 +171,9 @@ const Admin = () => {
         <div className="header">
           <h1>Admin Dashboard</h1>
           <div className="btn-group">
-            <button className="btn btn-primary btn-category">
-              <Link to='/CategoryForm' className="text-white">Add Category</Link>
-            </button>
+              <button className="btn btn-primary btn-category" style={{ backgroundColor: 'black', color: 'white' }}>
+                <Link to='/CategoryForm' className="text-white">Add Category</Link>
+              </button>
             <button className="btn btn-secondary btn-category">
               <Link to='/AddProducts' className="text-white">Add Product</Link>
             </button>
